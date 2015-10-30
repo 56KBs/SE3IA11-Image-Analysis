@@ -1,6 +1,0 @@
-D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\ImageEnhancer\bin\Debug\ImageEnhancer.exe.config
-D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\ImageEnhancer\bin\Debug\ImageEnhancer.exe
-D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\ImageEnhancer\bin\Debug\ImageEnhancer.pdb
-D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\ImageEnhancer\obj\Debug\ImageEnhancer.csprojResolveAssemblyReference.cache
-D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\ImageEnhancer\obj\Debug\ImageEnhancer.exe
-D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\ImageEnhancer\obj\Debug\ImageEnhancer.pdb
