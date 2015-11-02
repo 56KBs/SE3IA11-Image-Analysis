@@ -15,7 +15,7 @@ namespace ImageEnhancerLibrary
         // Stored as x,y
         private int[,] pixelArray { get; set; }
 
-        private Complex[,] fourierArray { get; set; }
+        public Complex[,] fourierArray { get; set; }
 
         private int height { get; set; }
 
@@ -57,21 +57,21 @@ namespace ImageEnhancerLibrary
 
         public Complex[,] Run2DFFT()
         {
+            // In place method
+            var DFTArray = new Complex[this.width, this.height];
+            var UV = new Point(-1, -1);
 
-            var test = new Complex[8];
-            test[0] = 0;
-            test[1] = 0;
-            test[2] = 400;
-            test[3] = 440;
-            test[4] = 480;
-            test[5] = 0;
-            test[6] = 0;
-            test[7] = 0;
+            while (++UV.X < this.width)
+            {
+                while (++UV.Y < this.height)
+                {
+                    DFTArray[UV.X, UV.Y] = this.Calculate2DFFT(UV);
+                }
 
+                UV.Y = -1;
+            }
 
-            var FFTArray = this.Calculate1DFFT(test);
-
-            return new Complex[1,1];
+            return DFTArray;
         }
 
         private Complex[] Calculate1DFFT(Complex[] fourierArray)
@@ -100,6 +100,36 @@ namespace ImageEnhancerLibrary
             }
 
             return fourierArray;
+        }
+
+        private Complex Calculate2DFFT(Point UV)
+        {
+            var returnValue = Complex.Zero;
+            var currentPoint = new Point(-1, -1);
+
+            while (++currentPoint.X < this.width)
+            {
+                var listY = this.ExtractColumn(this.fourierArray, currentPoint.X);
+                var resultY = this.Calculate1DFFT(listY);
+
+                var complexPower = new Complex(0, ((-2 * Math.PI * UV.X * currentPoint.X) / this.width));
+
+                returnValue += resultY[UV.Y] * Complex.Exp(complexPower);
+            }
+
+            return returnValue;
+        }
+
+        private Complex[] ExtractColumn(Complex[,] samples, int x)
+        {
+            var columnData = new Complex[this.height];
+
+            for (int y = 0; y < this.height; y++)
+            {
+                columnData[y] = samples[x, y];
+            }
+
+            return columnData;
         }
     }
 }

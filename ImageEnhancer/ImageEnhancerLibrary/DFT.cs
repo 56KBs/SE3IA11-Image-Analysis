@@ -15,7 +15,7 @@ namespace ImageEnhancerLibrary
         // Stored as x,y
         private int[,] pixelArray { get; set; }
 
-        private Complex[,] fourierArray { get; set; }
+        public Complex[,] fourierArray { get; set; }
 
         private int height { get; set; }
 
