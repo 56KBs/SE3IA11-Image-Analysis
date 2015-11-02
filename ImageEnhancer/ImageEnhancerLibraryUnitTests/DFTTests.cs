@@ -13,11 +13,13 @@ namespace ImageEnhancerLibraryUnitTests
         [TestMethod]
         public void TestDFT()
         {
-            var tester = new DFT(new Bitmap(@"C:\Users\Matt\Pictures\TestImage.bmp"));
+            var tester = new DFT(new Bitmap(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\TestImage.bmp"));              
+        }
 
-            tester.Run2DDFT();
-
-            
+        [TestMethod]
+        public void TestFFT()
+        {
+            var tester = new FFT(new Bitmap(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\TestImage.bmp"));
         }
     }
 }

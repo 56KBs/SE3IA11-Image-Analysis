@@ -12,9 +12,10 @@ namespace ImageEnhancerLibrary
     {
         public Bitmap original { get; set; }
 
-        private int[][] pixelArray { get; set; }
+        // Stored as x,y
+        private int[,] pixelArray { get; set; }
 
-        private List<List<Complex>> fourierArray { get; set; }
+        private Complex[,] fourierArray { get; set; }
 
         private int height { get; set; }
 
@@ -25,65 +26,81 @@ namespace ImageEnhancerLibrary
             this.original = original;
             this.height = this.original.Height;
             this.width = this.original.Width;
-            this.pixelArray = new int[this.height][this.width];
-            this.BuildComplexArray();
+            this.pixelArray = new int[this.width, this.height];
+            this.BuildPixelArray();
             this.fourierArray = this.Run2DDFT();
         }
 
-        private void BuildComplexArray()
+        private void BuildPixelArray()
         {
-            for (var i = 0; i <= original.Height; i++)
+            for (var i = 0; i < original.Height; i++)
             {
-                for (var j = 0; j <= original.Width; j++)
+                for (var j = 0; j < original.Width; j++)
                 {
-                    this.pixelArray[j][i] = original.GetPixel(j, i).ToGreyscale();
+                    this.pixelArray[j,i] = original.GetPixel(j, i).ToGreyscale();
                 }
             }
         }
 
-        public Complex CalculateDFT(Point UV, List<int> samples)
+        private Complex Calculate1DDFT(Point UV, int[] samples)
         {
-            var sampleCount = samples.Count;
+            // Runs on an 'vertical' array
+            var sampleCount = samples.Length;
             var returnValue = Complex.Zero;
-
-            for (var y = 0; y < samples.Count; y++)
+            var currentPoint = new Point(-1, -1);
+            
+            while (++currentPoint.Y < sampleCount)
             {
-                returnValue += samples[y] * Complex.Exp(
-                    new Complex(
-                        0,
-                        ((-2 * Math.PI * UV.Y * y) / samples.Count))
-                    );
+                var complexPower = new Complex(0, ((-2 * Math.PI * UV.Y * currentPoint.Y) / sampleCount));
+                returnValue += samples[currentPoint.Y] * Complex.Exp(complexPower);
             }
 
             return returnValue;
         }
 
-        public List<List<Complex>> Run2DDFT()
+        private Complex Calculate2DDFT(Point UV)
         {
-            var DFTArray = new List<List<Complex>>();
+            var returnValue = Complex.Zero;
+            var currentPoint = new Point(-1, -1);
 
-            for (var x = 0; x < this.width; x++)
+            while (++currentPoint.X < this.width)
             {
-                for (var y = 0; y < this.height; y++)
+                var listY = this.ExtractColumn(this.pixelArray, currentPoint.X);
+                var resultY = this.Calculate1DDFT(UV, listY);
+
+                var complexPower = new Complex(0, ((-2 * Math.PI * UV.X * currentPoint.X) / this.width));
+                returnValue += resultY * Complex.Exp(complexPower);
+            }
+
+            return returnValue;
+        }
+
+        public Complex[,] Run2DDFT()
+        {
+            // In place method
+            var DFTArray = new Complex[this.width, this.height];
+            var UV = new Point(-1, -1);
+
+            while (++UV.X < this.width)
+            {
+                while (++UV.Y < this.height)
                 {
-                    var listY = this.ExtractColumn(this.pixelArray, x);
-
-                    var resultY = this.CalculateDFT(new Point(x, y), listY);
-
-                    DFTArray[x][y] = 0;
+                    DFTArray[UV.X, UV.Y] = this.Calculate2DDFT(UV);
                 }
+
+                UV.Y = -1;
             }
 
             return DFTArray;
         }
 
-        private List<int> ExtractColumn(List<List<int>> samples, int column)
+        private int[] ExtractColumn(int[,] samples, int x)
         {
-            var columnData = new List<int>();
+            var columnData = new int[this.height];
 
-            for (int y = 0; y < samples.Count; y++)
+            for (int y = 0; y < this.height; y++)
             {
-                columnData.Add(samples[y][column]);
+                columnData[y] = samples[x, y];
             }
 
             return columnData;
