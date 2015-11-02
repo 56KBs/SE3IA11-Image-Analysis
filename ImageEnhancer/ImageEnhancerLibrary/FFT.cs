@@ -88,8 +88,6 @@ namespace ImageEnhancerLibrary
                 evenFourierArray = Calculate1DFFT(evenFourierArray);
                 oddFourierArray = Calculate1DFFT(oddFourierArray);
 
-                //fourierArray = this.JoinComplexArray(evenFourierArray, oddFourierArray);
-
                 var currentPoint = new Point(-1, -1);
 
                 while (++currentPoint.X < (fourierArray.Length / 2))
@@ -99,30 +97,9 @@ namespace ImageEnhancerLibrary
                     fourierArray[currentPoint.X] = evenFourierArray[currentPoint.X] + t;
                     fourierArray[currentPoint.X + (fourierArray.Length / 2)] = evenFourierArray[currentPoint.X] - t;
                 }
-
-                /*while (++currentPoint.X < (fourierArray.Length / 2))
-                {
-                    var t = fourierArray[currentPoint.X];
-                    var complexConstant = Complex.Exp((-2 * Math.PI * currentPoint.X) / fourierArray.Length) * fourierArray[currentPoint.X + (fourierArray.Length/2)];
-                    fourierArray[currentPoint.X] = t + complexConstant;
-                    fourierArray[currentPoint.X + (fourierArray.Length / 2)] = t - complexConstant;
-                }*/
             }
 
             return fourierArray;
-        }
-
-        private Complex[] JoinComplexArray(Complex[] first, Complex[] second)
-        {
-            var returnArray = new Complex[first.Length + second.Length];
-
-            for (var i = 0; i < first.Length; i++)
-            {
-                returnArray[i] = first[i];
-                returnArray[i + 1] = second[i];
-            }
-
-            return returnArray;
         }
     }
 }
