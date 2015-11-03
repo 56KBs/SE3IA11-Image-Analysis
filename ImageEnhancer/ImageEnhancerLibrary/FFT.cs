@@ -8,116 +8,59 @@ using System.Numerics;
 
 namespace ImageEnhancerLibrary
 {
-    public class FFT
+    public class FFT : FourierTransform
     {
         public Bitmap original { get; set; }
 
-        // Stored as x,y
-        private int[,] pixelArray { get; set; }
-
-        public Complex[,] fourierArray { get; set; }
-
-        private int height { get; set; }
-
-        private int width { get; set; }
-
-        public FFT(Bitmap original)
+        public FFT(Bitmap original) : base(original)
         {
             this.original = original;
-            this.height = this.original.Height;
-            this.width = this.original.Width;
-            this.pixelArray = new int[this.width, this.height];
-            this.BuildPixelArray();
-            this.fourierArray = new Complex[this.width, this.height];
-            this.BuildFourierArray();
-            this.fourierArray = this.Run2DFFT();
         }
 
-        private void BuildPixelArray()
+        protected override Complex Fourier2D(Point UV)
         {
-            for (var i = 0; i < original.Height; i++)
-            {
-                for (var j = 0; j < original.Width; j++)
-                {
-                    this.pixelArray[j, i] = original.GetPixel(j, i).ToGreyscale();
-                }
-            }
-        }
-
-        private void BuildFourierArray()
-        {
-            for (var i = 0; i < original.Height; i++)
-            {
-                for (var j = 0; j < original.Width; j++)
-                {
-                    this.fourierArray[j, i] = new Complex(this.pixelArray[j, i], 0);
-                }
-            }
-        }
-
-        public Complex[,] Run2DFFT()
-        {
-            // In place method
-            var DFTArray = new Complex[this.width, this.height];
-            var UV = new Point(-1, -1);
-
-            while (++UV.X < this.width)
-            {
-                while (++UV.Y < this.height)
-                {
-                    DFTArray[UV.X, UV.Y] = this.Calculate2DFFT(UV);
-                }
-
-                UV.Y = -1;
-            }
-
-            return DFTArray;
-        }
-
-        private Complex[] Calculate1DFFT(Complex[] fourierArray)
-        {
-            if (fourierArray.Length == 1)
-            {
-                return fourierArray;
-            }
-            else
-            {
-                Complex[] evenFourierArray = fourierArray.Where((value, index) => index % 2 == 0).ToArray();
-                Complex[] oddFourierArray = fourierArray.Where((value, index) => index % 2 != 0).ToArray();
-
-                evenFourierArray = Calculate1DFFT(evenFourierArray);
-                oddFourierArray = Calculate1DFFT(oddFourierArray);
-
-                var currentPoint = new Point(-1, -1);
-
-                while (++currentPoint.X < (fourierArray.Length / 2))
-                {
-                    var complexPower = new Complex(0, (-2 * Math.PI * currentPoint.X) / fourierArray.Length);
-                    var t = Complex.Exp(complexPower) * oddFourierArray[currentPoint.X];
-                    fourierArray[currentPoint.X] = evenFourierArray[currentPoint.X] + t;
-                    fourierArray[currentPoint.X + (fourierArray.Length / 2)] = evenFourierArray[currentPoint.X] - t;
-                }
-            }
-
-            return fourierArray;
-        }
-
-        private Complex Calculate2DFFT(Point UV)
-        {
-            var returnValue = Complex.Zero;
+            var fourierValue = Complex.Zero;
             var currentPoint = new Point(-1, -1);
 
             while (++currentPoint.X < this.width)
             {
-                var listY = this.ExtractColumn(this.fourierArray, currentPoint.X);
-                var resultY = this.Calculate1DFFT(listY);
+                var columnValues = this.ExtractColumn(this.fourierArray, currentPoint.X);
+                var columnFourier = this.Fourier1D(columnValues);
 
-                var complexPower = new Complex(0, ((-2 * Math.PI * UV.X * currentPoint.X) / this.width));
+                var complexValue = new Complex(0, ((-2 * Math.PI * UV.X * currentPoint.X) / this.width));
 
-                returnValue += resultY[UV.Y] * Complex.Exp(complexPower);
+                fourierValue += columnValues[UV.Y] * Complex.Exp(complexValue);
             }
 
-            return returnValue;
+            return fourierValue;
+        }
+
+        protected Complex[] Fourier1D(Complex[] fourierArray)
+        {
+            if (fourierArray.Length > 1)
+            {
+                var fourierLength = fourierArray.Length;
+                var fourierHalfLength = fourierLength / 2;
+
+                var evenArray = fourierArray.Where((value, index) => index % 2 == 0).ToArray();
+                var oddArray = fourierArray.Where((value, index) => index % 2 != 0).ToArray();
+
+                evenArray = this.Fourier1D(evenArray);
+                oddArray = this.Fourier1D(oddArray);
+
+                var currentPoint = new Point(-1, -1);
+
+                while (++currentPoint.X < fourierHalfLength)
+                {
+                    var complexValue = new Complex(0, (-2 * Math.PI * currentPoint.X) / fourierArray.Length);
+                    var t = Complex.Exp(complexValue) * oddArray[currentPoint.X];
+
+                    fourierArray[currentPoint.X] = evenArray[currentPoint.X] + t;
+                    fourierArray[currentPoint.X + fourierHalfLength] = evenArray[currentPoint.X] - t;
+                }
+            }
+
+            return fourierArray;
         }
 
         private Complex[] ExtractColumn(Complex[,] samples, int x)

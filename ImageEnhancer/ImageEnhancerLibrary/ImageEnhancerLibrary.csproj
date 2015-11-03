@@ -44,6 +44,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="DFT.cs" />
     <Compile Include="FFT.cs" />
+    <Compile Include="FourierTransform.cs" />
     <Compile Include="ImageHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

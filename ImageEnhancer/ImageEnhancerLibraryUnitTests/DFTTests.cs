@@ -14,8 +14,8 @@ namespace ImageEnhancerLibraryUnitTests
         public void TestDFT()
         {
             var tester = new DFT(new Bitmap(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\TestImage.bmp"));
-
-            var actualResult = tester.fourierArray;
+            tester.Create();
+            var actualResult = tester.GetRawFourierArray();
 
             var expectedResult = new Complex[8, 8];
 
@@ -84,8 +84,6 @@ namespace ImageEnhancerLibraryUnitTests
             expectedResult[7, 6] = new Complex(-3.5527136788005E-14, 136.568542494924);
             expectedResult[7, 7] = new Complex(-90.7106781186545, -713.553390593274);
 
-            var difference = 0.0000001;
-
             for (var i = 0; i < 8; i++)
             {
                 for (var j = 0; j < 8; j++)
@@ -99,8 +97,8 @@ namespace ImageEnhancerLibraryUnitTests
         public void TestFFT()
         {
             var tester = new FFT(new Bitmap(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\TestImage.bmp"));
-
-            var actualResult = tester.fourierArray;
+            tester.Create();
+            var actualResult = tester.GetRawFourierArray();
 
             var expectedResult = new Complex[8,8];
 
@@ -168,8 +166,6 @@ namespace ImageEnhancerLibraryUnitTests
             expectedResult[7, 5] = new Complex(134.142135623731, -255.56349186104);
             expectedResult[7, 6] = new Complex(-3.5527136788005E-14, 136.568542494924);
             expectedResult[7, 7] = new Complex(-90.7106781186545, -713.553390593274);
-
-            var difference = 0.0000001;
 
             for (var i = 0; i < 8; i++)
             {
