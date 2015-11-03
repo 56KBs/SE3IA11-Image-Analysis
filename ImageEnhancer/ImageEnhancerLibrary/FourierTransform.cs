@@ -36,7 +36,7 @@ namespace ImageEnhancerLibrary
             this.BuildFourierArray(originalImage);
         }
 
-        public void Create()
+        public virtual void Create()
         {
             var fourierArray = new Complex[this.width, this.height];
             var UV = new Point(-1, -1);
@@ -54,7 +54,6 @@ namespace ImageEnhancerLibrary
             this.fourierArray = fourierArray;
 
             this.UpdateFourierMagnitudeArray();
-            this.CalculateFourierPeak();
         }
 
         public void Update()
@@ -119,6 +118,8 @@ namespace ImageEnhancerLibrary
                 {
                     this.fourierMagnitudeColorArray[currentPoint.X, currentPoint.Y] = this.ComplexToColor(this.fourierArray[currentPoint.X, currentPoint.Y]);
                 }
+
+                currentPoint.Y = -1;
             }
         }
 
@@ -131,7 +132,7 @@ namespace ImageEnhancerLibrary
         {
             var colorValue = (int) ((255 / Math.Log(1 + Math.Abs(this.fourierPeak.Magnitude))) * Math.Log(1 + Math.Abs(complexValue.Magnitude)));
 
-            return Color.FromArgb(colorValue, colorValue, colorValue);
+            return Color.FromArgb(0, colorValue, colorValue, colorValue);
         }
 
         public int[,] GetRawFourierMagnitudeArray()
@@ -141,19 +142,99 @@ namespace ImageEnhancerLibrary
 
         public Bitmap GetFourierMagnitudeBitmap()
         {
-            Bitmap image;
+            return this.CreateBitmap(this.fourierMagnitudeColorArray);
+        }
 
-            using (var stream = new MemoryStream(this.ColorArrayToByteArray(this.fourierMagnitudeColorArray)))
+        public Bitmap GetShiftedFourierMagnitudeBitmap()
+        {
+            var shiftedMagnitudeArray = this.GetShiftedMagnitudeColorArray();
+
+            return CreateBitmap(shiftedMagnitudeArray);
+        }
+
+        private Bitmap CreateBitmap(Color[,] colorArray)
+        {
+            var magnitudeBitmap = new Bitmap(this.width, this.height);
+
+            var currentPoint = new Point(-1, -1);
+
+            while (++currentPoint.X < this.width)
             {
-                image = new Bitmap(stream);
+                while (++currentPoint.Y < this.height)
+                {
+                    magnitudeBitmap.SetPixel(currentPoint.X, currentPoint.Y, colorArray[currentPoint.X, currentPoint.Y]);
+                }
+
+                currentPoint.Y = -1;
             }
 
-            return image;
+            return magnitudeBitmap;
+        }
+
+        public Color[,] GetShiftedMagnitudeColorArray()
+        {
+            var shiftedMagnitudeArray = new Color[this.width, this.height];
+
+            // Quadrant shift
+
+            for (var i = 0; i < this.width; i++)
+            {
+                for (var j = 0; j < this.height; j++)
+                {
+                    switch (this.CalculateQuadrant(i, j))
+                    {
+                        case 1:
+                            // Copy to quadrant 4
+                            shiftedMagnitudeArray[i + this.width / 2, j + this.height / 2] = this.fourierMagnitudeColorArray[i, j];
+                            break;
+                        case 2:
+                            // Copy to quadrant 3
+                            shiftedMagnitudeArray[i - this.width / 2, j + this.height / 2] = this.fourierMagnitudeColorArray[i, j];
+                            break;
+                        case 3:
+                            // Copy to quadrant 2
+                            shiftedMagnitudeArray[i + this.width / 2, j - this.height / 2] = this.fourierMagnitudeColorArray[i, j];
+                            break;
+                        case 4:
+                            // Copy to quadrant 4
+                            shiftedMagnitudeArray[i - this.width / 2, j - this.height / 2] = this.fourierMagnitudeColorArray[i, j];
+                            break;
+                    }
+                }
+            }
+
+            return shiftedMagnitudeArray;
+        }
+
+        private int CalculateQuadrant(int x, int y)
+        {
+            if (x < this.width / 2)
+            {
+                if (y < this.height / 2)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 3;
+                }
+            }
+            else
+            {
+                if (y < this.height / 2)
+                {
+                    return 2;
+                }
+                else
+                {
+                    return 4;
+                }
+            }
         }
 
         private byte[] ColorArrayToByteArray(Color[,] inputArray)
         {
-            return inputArray.Cast<int>().Select(x => (byte)x).ToArray();
+            return inputArray.Cast<Color>().Select(x => (byte)x.R).ToArray();
         }
     }
 }
