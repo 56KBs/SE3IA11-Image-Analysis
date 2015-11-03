@@ -4,12 +4,29 @@ using ImageEnhancerLibrary;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace ImageEnhancerLibraryUnitTests
 {
     [TestClass]
     public class DFTTests
     {
+        [TestMethod]
+        public void SaveFFTImage()
+        {
+            var tester = new FFT(new Bitmap(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\dogSquare.bmp"));
+            tester.Create();
+
+            var output = tester.GetFourierMagnitudeBitmap();
+
+            output.Save(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\Output\FFTdogSquare.bmp", ImageFormat.Bmp);
+
+            output = tester.GetShiftedFourierMagnitudeBitmap();
+
+            output.Save(@"D:\GitHub\SE3IA11-Image-Enhancement\ImageEnhancer\TestImage\Output\FFTdogSquareShifted.bmp", ImageFormat.Bmp);
+
+        }
+
         [TestMethod]
         public void TestDFT()
         {

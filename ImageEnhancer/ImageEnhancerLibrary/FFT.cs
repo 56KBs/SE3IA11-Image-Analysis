@@ -12,9 +12,33 @@ namespace ImageEnhancerLibrary
     {
         public Bitmap original { get; set; }
 
+        private Complex[][] fourierArrayY { get; set; }
+
         public FFT(Bitmap original) : base(original)
         {
             this.original = original;
+        }
+
+        public override void Create()
+        {
+            var fourierArray = new Complex[this.width, this.height];
+            var UV = new Point(-1, -1);
+
+            this.BuildFourierArrayY();
+
+            while (++UV.X < this.width)
+            {
+                while (++UV.Y < this.height)
+                {
+                    fourierArray[UV.X, UV.Y] = this.Fourier2D(UV);
+                }
+
+                UV.Y = -1;
+            }
+
+            this.fourierArray = fourierArray;
+
+            this.UpdateFourierMagnitudeArray();
         }
 
         protected override Complex Fourier2D(Point UV)
@@ -24,12 +48,9 @@ namespace ImageEnhancerLibrary
 
             while (++currentPoint.X < this.width)
             {
-                var columnValues = this.ExtractColumn(this.fourierArray, currentPoint.X);
-                var columnFourier = this.Fourier1D(columnValues);
-
                 var complexValue = new Complex(0, ((-2 * Math.PI * UV.X * currentPoint.X) / this.width));
 
-                fourierValue += columnValues[UV.Y] * Complex.Exp(complexValue);
+                fourierValue += fourierArrayY[currentPoint.X][UV.Y] * Complex.Exp(complexValue);
             }
 
             return fourierValue;
@@ -42,25 +63,76 @@ namespace ImageEnhancerLibrary
                 var fourierLength = fourierArray.Length;
                 var fourierHalfLength = fourierLength / 2;
 
-                var evenArray = fourierArray.Where((value, index) => index % 2 == 0).ToArray();
-                var oddArray = fourierArray.Where((value, index) => index % 2 != 0).ToArray();
+                var splitFourierArray = this.splitArray(fourierArray);
+
+                var evenArray = splitFourierArray[0];
+                var oddArray = splitFourierArray[1];
 
                 evenArray = this.Fourier1D(evenArray);
                 oddArray = this.Fourier1D(oddArray);
 
-                var currentPoint = new Point(-1, -1);
+                var x = -1;
 
-                while (++currentPoint.X < fourierHalfLength)
+                while (++x < fourierHalfLength)
                 {
-                    var complexValue = new Complex(0, (-2 * Math.PI * currentPoint.X) / fourierArray.Length);
-                    var t = Complex.Exp(complexValue) * oddArray[currentPoint.X];
+                    var complexValue = new Complex(0, (-2 * Math.PI * x) / fourierArray.Length);
+                    var t = Complex.Exp(complexValue) * oddArray[x];
 
-                    fourierArray[currentPoint.X] = evenArray[currentPoint.X] + t;
-                    fourierArray[currentPoint.X + fourierHalfLength] = evenArray[currentPoint.X] - t;
+                    fourierArray[x] = evenArray[x] + t;
+                    fourierArray[x + fourierHalfLength] = evenArray[x] - t;
                 }
             }
 
             return fourierArray;
+        }
+
+        private void BuildFourierArrayY()
+        {
+            fourierArrayY = new Complex[this.width][];
+
+            var currentPoint = new Point(-1, -1);
+            while (++currentPoint.X < this.width)
+            {
+                fourierArrayY[currentPoint.X] = this.Fourier1D(this.ExtractColumn(this.fourierArray, currentPoint.X));
+            }
+        }
+
+        private Complex[][] splitArray(Complex[] fourierArray)
+        {
+            var fourierLength = fourierArray.Length;
+            var fourierHalfLength = fourierLength / 2;
+
+            var splitArray = new Complex[2][];
+
+            if (fourierLength % 2 != 0)
+            {
+                splitArray[0] = new Complex[fourierHalfLength + 1];
+            }
+            else
+            {
+                splitArray[0] = new Complex[fourierHalfLength];
+            } 
+
+            splitArray[1] = new Complex[fourierHalfLength];
+
+            var evenCounter = 0;
+            var oddCounter = 0;
+
+            for (var i = 0; i < fourierLength; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    splitArray[0][evenCounter] = fourierArray[i];
+                    evenCounter++;
+                }
+                else
+                {
+                    splitArray[1][oddCounter] = fourierArray[i];
+                    oddCounter++;
+                }
+            }
+
+            return splitArray;
         }
 
         private Complex[] ExtractColumn(Complex[,] samples, int x)
