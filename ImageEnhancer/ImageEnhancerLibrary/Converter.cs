@@ -9,6 +9,11 @@ namespace ImageEnhancerLibrary
 {
     static class Converter
     {
+        /// <summary>
+        /// Converts a complex number into it's magnitude
+        /// </summary>
+        /// <param name="complexValue">Complex data</param>
+        /// <returns>Magnitude of data</returns>
         public static int ComplexToMagnitude(Complex complexValue)
         {
             return (int)complexValue.Magnitude;

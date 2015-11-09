@@ -31,31 +31,37 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.processToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fFTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forwardFFTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inverseFFTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noiseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.periodicNoiseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.medianFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mSEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colouriseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.loadImage = new System.Windows.Forms.Button();
-            this.fourierTransform = new System.Windows.Forms.Button();
-            this.saveUnshiftedTransform = new System.Windows.Forms.Button();
-            this.removePeriodicNoise = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.imageBoxOriginal = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.inverseTransform = new System.Windows.Forms.Button();
+            this.imageBoxWorking = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageBoxOriginal)).BeginInit();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageBoxWorking)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.processToolStripMenuItem,
+            this.mSEToolStripMenuItem,
+            this.colouriseToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(784, 24);
@@ -73,9 +79,78 @@
             // loadImageToolStripMenuItem
             // 
             this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadImageToolStripMenuItem.Text = "Load Image";
             this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
+            // 
+            // processToolStripMenuItem
+            // 
+            this.processToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fFTToolStripMenuItem,
+            this.noiseToolStripMenuItem});
+            this.processToolStripMenuItem.Name = "processToolStripMenuItem";
+            this.processToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.processToolStripMenuItem.Text = "Process";
+            // 
+            // fFTToolStripMenuItem
+            // 
+            this.fFTToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.forwardFFTToolStripMenuItem,
+            this.inverseFFTToolStripMenuItem});
+            this.fFTToolStripMenuItem.Name = "fFTToolStripMenuItem";
+            this.fFTToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.fFTToolStripMenuItem.Text = "FFT";
+            // 
+            // forwardFFTToolStripMenuItem
+            // 
+            this.forwardFFTToolStripMenuItem.Name = "forwardFFTToolStripMenuItem";
+            this.forwardFFTToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.forwardFFTToolStripMenuItem.Text = "Forward FFT";
+            this.forwardFFTToolStripMenuItem.Click += new System.EventHandler(this.forwardFFTToolStripMenuItem_Click);
+            // 
+            // inverseFFTToolStripMenuItem
+            // 
+            this.inverseFFTToolStripMenuItem.Name = "inverseFFTToolStripMenuItem";
+            this.inverseFFTToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.inverseFFTToolStripMenuItem.Text = "Inverse FFT";
+            this.inverseFFTToolStripMenuItem.Click += new System.EventHandler(this.inverseFFTToolStripMenuItem_Click);
+            // 
+            // noiseToolStripMenuItem
+            // 
+            this.noiseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.periodicNoiseToolStripMenuItem,
+            this.medianFilterToolStripMenuItem});
+            this.noiseToolStripMenuItem.Name = "noiseToolStripMenuItem";
+            this.noiseToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.noiseToolStripMenuItem.Text = "Noise";
+            // 
+            // periodicNoiseToolStripMenuItem
+            // 
+            this.periodicNoiseToolStripMenuItem.Name = "periodicNoiseToolStripMenuItem";
+            this.periodicNoiseToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.periodicNoiseToolStripMenuItem.Text = "Periodic Noise";
+            this.periodicNoiseToolStripMenuItem.Click += new System.EventHandler(this.periodicNoiseToolStripMenuItem_Click);
+            // 
+            // medianFilterToolStripMenuItem
+            // 
+            this.medianFilterToolStripMenuItem.Name = "medianFilterToolStripMenuItem";
+            this.medianFilterToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.medianFilterToolStripMenuItem.Text = "Median Filter";
+            this.medianFilterToolStripMenuItem.Click += new System.EventHandler(this.medianFilterToolStripMenuItem_Click);
+            // 
+            // mSEToolStripMenuItem
+            // 
+            this.mSEToolStripMenuItem.Name = "mSEToolStripMenuItem";
+            this.mSEToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
+            this.mSEToolStripMenuItem.Text = "MSE";
+            this.mSEToolStripMenuItem.Click += new System.EventHandler(this.mSEToolStripMenuItem_Click);
+            // 
+            // colouriseToolStripMenuItem
+            // 
+            this.colouriseToolStripMenuItem.Name = "colouriseToolStripMenuItem";
+            this.colouriseToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.colouriseToolStripMenuItem.Text = "Colourise";
+            this.colouriseToolStripMenuItem.Click += new System.EventHandler(this.colouriseToolStripMenuItem_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -85,71 +160,15 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tabControl1, 0, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 27);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.11823F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.881773F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(760, 522);
             this.tableLayoutPanel1.TabIndex = 1;
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.flowLayoutPanel1.Controls.Add(this.loadImage);
-            this.flowLayoutPanel1.Controls.Add(this.fourierTransform);
-            this.flowLayoutPanel1.Controls.Add(this.saveUnshiftedTransform);
-            this.flowLayoutPanel1.Controls.Add(this.removePeriodicNoise);
-            this.flowLayoutPanel1.Controls.Add(this.inverseTransform);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 479);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(744, 35);
-            this.flowLayoutPanel1.TabIndex = 2;
-            // 
-            // loadImage
-            // 
-            this.loadImage.Location = new System.Drawing.Point(3, 3);
-            this.loadImage.Name = "loadImage";
-            this.loadImage.Size = new System.Drawing.Size(75, 23);
-            this.loadImage.TabIndex = 0;
-            this.loadImage.Text = "Load Image";
-            this.loadImage.UseVisualStyleBackColor = true;
-            this.loadImage.Click += new System.EventHandler(this.loadImage_Click_1);
-            // 
-            // fourierTransform
-            // 
-            this.fourierTransform.Location = new System.Drawing.Point(84, 3);
-            this.fourierTransform.Name = "fourierTransform";
-            this.fourierTransform.Size = new System.Drawing.Size(103, 23);
-            this.fourierTransform.TabIndex = 1;
-            this.fourierTransform.Text = "Fourier Transform";
-            this.fourierTransform.UseVisualStyleBackColor = true;
-            this.fourierTransform.Click += new System.EventHandler(this.fourierTransform_Click);
-            // 
-            // saveUnshiftedTransform
-            // 
-            this.saveUnshiftedTransform.Location = new System.Drawing.Point(193, 3);
-            this.saveUnshiftedTransform.Name = "saveUnshiftedTransform";
-            this.saveUnshiftedTransform.Size = new System.Drawing.Size(149, 23);
-            this.saveUnshiftedTransform.TabIndex = 2;
-            this.saveUnshiftedTransform.Text = "Save Unshifted Transform";
-            this.saveUnshiftedTransform.UseVisualStyleBackColor = true;
-            this.saveUnshiftedTransform.Click += new System.EventHandler(this.saveUnshiftedTransform_Click);
-            // 
-            // removePeriodicNoise
-            // 
-            this.removePeriodicNoise.Location = new System.Drawing.Point(348, 3);
-            this.removePeriodicNoise.Name = "removePeriodicNoise";
-            this.removePeriodicNoise.Size = new System.Drawing.Size(129, 23);
-            this.removePeriodicNoise.TabIndex = 3;
-            this.removePeriodicNoise.Text = "Remove Periodic Noise";
-            this.removePeriodicNoise.UseVisualStyleBackColor = true;
-            this.removePeriodicNoise.Click += new System.EventHandler(this.removePeriodicNoise_Click);
             // 
             // tabControl1
             // 
@@ -161,7 +180,7 @@
             this.tabControl1.Location = new System.Drawing.Point(8, 8);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(744, 465);
+            this.tabControl1.Size = new System.Drawing.Size(744, 506);
             this.tabControl1.TabIndex = 3;
             // 
             // tabPage1
@@ -170,54 +189,42 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(736, 439);
+            this.tabPage1.Size = new System.Drawing.Size(736, 480);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Original Image";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // imageBoxOriginal
             // 
+            this.imageBoxOriginal.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.imageBoxOriginal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageBoxOriginal.Location = new System.Drawing.Point(3, 3);
             this.imageBoxOriginal.Name = "imageBoxOriginal";
-            this.imageBoxOriginal.Size = new System.Drawing.Size(730, 433);
+            this.imageBoxOriginal.Size = new System.Drawing.Size(730, 474);
             this.imageBoxOriginal.TabIndex = 0;
             this.imageBoxOriginal.TabStop = false;
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.panel1);
+            this.tabPage2.Controls.Add(this.imageBoxWorking);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(736, 439);
+            this.tabPage2.Size = new System.Drawing.Size(736, 480);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Fourier Transform";
+            this.tabPage2.Text = "Working Image";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // panel1
+            // imageBoxWorking
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(730, 433);
-            this.panel1.TabIndex = 0;
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_Draw_MouseDown);
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_Draw_MouseMove);
-            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_Draw_MouseUp);
-            // 
-            // inverseTransform
-            // 
-            this.inverseTransform.Location = new System.Drawing.Point(483, 3);
-            this.inverseTransform.Name = "inverseTransform";
-            this.inverseTransform.Size = new System.Drawing.Size(148, 23);
-            this.inverseTransform.TabIndex = 4;
-            this.inverseTransform.Text = "Inverse Fourier Transform";
-            this.inverseTransform.UseVisualStyleBackColor = true;
-            this.inverseTransform.Click += new System.EventHandler(this.inverseTransform_Click);
+            this.imageBoxWorking.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.imageBoxWorking.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.imageBoxWorking.Location = new System.Drawing.Point(3, 3);
+            this.imageBoxWorking.Name = "imageBoxWorking";
+            this.imageBoxWorking.Size = new System.Drawing.Size(730, 474);
+            this.imageBoxWorking.TabIndex = 0;
+            this.imageBoxWorking.TabStop = false;
+            this.imageBoxWorking.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imageBoxWorking_MouseDown);
             // 
             // Form1
             // 
@@ -234,11 +241,11 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.imageBoxOriginal)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.imageBoxWorking)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -250,17 +257,20 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadImageToolStripMenuItem;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Button loadImage;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.PictureBox imageBoxOriginal;
-        private System.Windows.Forms.Button fourierTransform;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button saveUnshiftedTransform;
-        private System.Windows.Forms.Button removePeriodicNoise;
-        private System.Windows.Forms.Button inverseTransform;
+        private System.Windows.Forms.ToolStripMenuItem processToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fFTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem forwardFFTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inverseFFTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noiseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem periodicNoiseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem medianFilterToolStripMenuItem;
+        private System.Windows.Forms.PictureBox imageBoxWorking;
+        private System.Windows.Forms.ToolStripMenuItem mSEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colouriseToolStripMenuItem;
     }
 }
 

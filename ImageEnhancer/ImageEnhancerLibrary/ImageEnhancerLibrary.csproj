@@ -46,7 +46,6 @@
     <Compile Include="PixelArray.cs" />
     <Compile Include="IEImage.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="ImageHelper.cs" />
     <Compile Include="Filters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
