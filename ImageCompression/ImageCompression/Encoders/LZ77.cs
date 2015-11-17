@@ -51,7 +51,7 @@ namespace ImageCompression.Encoders
                             lookahead = new Helpers.LimitedQueue<T>(data.Length - position - matchLength);
                             for (var i = 0; i < lookahead.size; i++)
                             {
-                                lookahead.Enqueue(data[position + i + 1]);
+                                lookahead.Enqueue(data[position + matchLength + i]);
                             }
                         }
                         else
@@ -75,9 +75,12 @@ namespace ImageCompression.Encoders
                     {
                         outputList.Add(new LZ77StoreShort<T>(data[position]));
 
-                        position++;
-                        lookahead.Enqueue(data[position - 2]);
-                        window.Enqueue(data[position - 1]);
+                        // Only add to the queue's if the loop is going to continue
+                        if (++position < data.Length - 1)
+                        {
+                            lookahead.Enqueue(data[position + 2]);
+                            window.Enqueue(data[position - 1]);
+                        }
                     }
                 }                
             }
