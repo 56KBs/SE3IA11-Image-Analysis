@@ -23,5 +23,26 @@ namespace ImageCompression.Encoders
         {
             return Convert.ToByte(this.shortForm) + "," + data.ToString();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            LZ77StoreShort<T> storeShort = obj as LZ77StoreShort<T>;
+            if ((System.Object)storeShort == null)
+            {
+                return false;
+            }
+
+            return this.ToString() == storeShort.ToString();
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

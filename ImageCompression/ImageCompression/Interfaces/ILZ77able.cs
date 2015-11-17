@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImageCompression.Encoders
+namespace ImageCompression.Interfaces
 {
-    public interface ILZ77Store<T> where T : Interfaces.ILZ77able
+    public interface ILZ77able
     {
-        bool shortForm { get; }
     }
 }

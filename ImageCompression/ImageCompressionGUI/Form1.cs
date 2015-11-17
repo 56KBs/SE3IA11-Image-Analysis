@@ -89,6 +89,9 @@ namespace ImageCompressionGUI
         {
             var singleDimensionArray = RunLength.Encode(this.originalImage.GetPixelMatrix());
 
+            var lz77encoded = LZ77.Encode(singleDimensionArray);
+            
+
             var byteArray = singleDimensionArray.ConvertAll<byte[]>(new Converter<RunLengthStore<RGB>, byte[]>(value => value.ToByte()));
 
             var byteArray1D = byteArray.SelectMany(x => x).ToArray();

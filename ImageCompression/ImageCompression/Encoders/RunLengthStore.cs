@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Encoders
 {
-    public class RunLengthStore<T> where T : ColorModel.RGB
+    public class RunLengthStore<T> : Interfaces.ILZ77able where T : ColorModel.RGB
     {
         public T data { get; private set; }
 

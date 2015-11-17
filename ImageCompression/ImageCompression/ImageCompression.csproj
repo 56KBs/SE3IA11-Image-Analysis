@@ -56,6 +56,7 @@
     <Compile Include="Helpers\Int.cs" />
     <Compile Include="Helpers\LimitedQueue.cs" />
     <Compile Include="Helpers\LimitedStack.cs" />
+    <Compile Include="Interfaces\ILZ77able.cs" />
     <Compile Include="StandardImage.cs" />
     <Compile Include="ImageData\Channel.cs" />
     <Compile Include="ImageData\FourierMatrix.cs" />
