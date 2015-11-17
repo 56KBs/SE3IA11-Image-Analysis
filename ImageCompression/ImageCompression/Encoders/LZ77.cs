@@ -8,15 +8,22 @@ namespace ImageCompression.Encoders
 {
     public class LZ77
     {
-        public static ILZ77Store<T>[] Encode<T>(T[] data) where T : Interfaces.ILZ77able
+        public static List<LZ77Store> Encode<T>(List<T> data)
+            where T : Interfaces.IEncodable
         {
-            var outputList = new List<ILZ77Store<T>>();
+            return LZ77.Encode(data.ToArray()).ToList();
+        }
+
+        public static LZ77Store[] Encode<T>(T[] data)
+            where T : Interfaces.IEncodable
+        {
+            var outputList = new List<LZ77Store>();
 
             var window = new Helpers.LimitedQueue<T>(20);
             var lookahead = new Helpers.LimitedQueue<T>(4);
 
             var position = 0;
-
+            var lookaheadEnd = 0;
 
             while (position < data.Length)
             {
@@ -26,10 +33,11 @@ namespace ImageCompression.Encoders
                     outputList.Add(new LZ77StoreShort<T>(data[position]));
 
                     position++;
+                    lookaheadEnd++;
 
-                    for (var i = 0; i < lookahead.size; i++)
+                    while (lookaheadEnd++ <= lookahead.size)
                     {
-                        lookahead.Enqueue(data[position + i]);
+                        lookahead.Enqueue(data[lookaheadEnd - 1]);
                     }
 
                     window.Enqueue(data[position - 1]);
@@ -45,21 +53,31 @@ namespace ImageCompression.Encoders
                     {
                         outputList.Add(new LZ77StoreLong<T>((position - matchPosition), matchLength));
 
-                        // Will overflow to past the end
-                        if (position + lookahead.size + matchLength > data.Length)
+                        // Last item in the list
+                        if (lookaheadEnd == data.Length - 1)
                         {
+                            // Do nothing :)
+                        }
+                        else if (lookaheadEnd + matchLength > data.Length)
+                        {
+                            // Will overflow to past the end
                             lookahead = new Helpers.LimitedQueue<T>(data.Length - position - matchLength);
-                            for (var i = 0; i < lookahead.size; i++)
+                            lookaheadEnd = position + matchLength;
+                            var lookaheadNewEnd = lookaheadEnd + lookahead.size;
+
+                            while (lookaheadEnd++ < lookaheadNewEnd)
                             {
-                                lookahead.Enqueue(data[position + matchLength + i]);
+                                lookahead.Enqueue(data[lookaheadEnd - 1]);
                             }
                         }
                         else
                         {
                             // Not going to overflow ourselves
-                            for (var i = 0; i < matchLength; i++)
+                            var lookaheadNewEnd = lookaheadEnd + matchLength;
+
+                            while (lookaheadEnd++ <= lookaheadNewEnd)
                             {
-                                lookahead.Enqueue(data[position + lookahead.size + i]);
+                                lookahead.Enqueue(data[lookaheadEnd - 1]);
                             }
                         }
 
@@ -76,7 +94,7 @@ namespace ImageCompression.Encoders
                         outputList.Add(new LZ77StoreShort<T>(data[position]));
 
                         // Only add to the queue's if the loop is going to continue
-                        if (++position < data.Length - 1)
+                        if (++position < data.Length - 1 && position + 2 < data.Length)
                         {
                             lookahead.Enqueue(data[position + 2]);
                             window.Enqueue(data[position - 1]);
@@ -162,7 +180,8 @@ namespace ImageCompression.Encoders
         }
 
 
-        public static T[] Decode<T>(ILZ77Store<T>[] encodedData) where T : Interfaces.ILZ77able
+        public static T[] Decode<T>(LZ77Store[] encodedData)
+            where T : Interfaces.IEncodable
         {
             var decodedData = new List<T>();
 

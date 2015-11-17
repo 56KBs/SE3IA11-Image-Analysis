@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Interfaces
 {
-    public interface ILZ77able
+    public interface IEncodable
     {
+        byte[] ToByteArray();
     }
 }

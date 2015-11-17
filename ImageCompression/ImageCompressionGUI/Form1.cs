@@ -90,16 +90,22 @@ namespace ImageCompressionGUI
             var singleDimensionArray = RunLength.Encode(this.originalImage.GetPixelMatrix());
 
             var lz77encoded = LZ77.Encode(singleDimensionArray);
-            
 
-            var byteArray = singleDimensionArray.ConvertAll<byte[]>(new Converter<RunLengthStore<RGB>, byte[]>(value => value.ToByte()));
-
-            var byteArray1D = byteArray.SelectMany(x => x).ToArray();
+            var byteArray = lz77encoded.ConvertAll(new Converter<LZ77Store, byte[]>(x => x.ToByteArray()));
 
             using (var byteWriter = new FileStream(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\file.miac", FileMode.Create, FileAccess.Write))
             {
                 byteArray.ForEach(x => byteWriter.Write(x, 0, x.Length));
             }
+
+            /*var byteArray2 = singleDimensionArray.ConvertAll<byte[]>(new Converter<RunLengthStore<RGB>, byte[]>(value => value.ToByte()));
+
+            var byteArray21D = byteArray.SelectMany(x => x).ToArray();
+
+            using (var byteWriter = new FileStream(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\file.miac", FileMode.Create, FileAccess.Write))
+            {
+                byteArray.ForEach(x => byteWriter.Write(x, 0, x.Length));
+            }*/
         }
     }
 }

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Encoders
 {
-    public class RunLengthStore<T> : Interfaces.ILZ77able where T : ColorModel.RGB
+    public class RunLengthStore<T> : Interfaces.IEncodable
+        where T : Interfaces.IEncodable
     {
         public T data { get; private set; }
 
@@ -30,15 +31,14 @@ namespace ImageCompression.Encoders
             }
         }
 
-        public byte[] ToByte()
+        public byte[] ToByteArray()
         {
             var dataBytes = data.ToByteArray();
 
-            var returnByteArray = new byte[dataBytes.Length + 2];
+            var returnByteArray = new byte[dataBytes.Length];
 
             dataBytes.CopyTo(returnByteArray, 0);
-            returnByteArray[dataBytes.Length] = 0x002C;
-            returnByteArray[dataBytes.Length + 1] = (byte)this.length;
+            returnByteArray[dataBytes.Length - 1] = (byte)this.length;
 
             return returnByteArray;
         }

@@ -9,9 +9,9 @@ namespace ImageCompression.Encoders
 {
     public static class RunLength
     {
-        public static List<RunLengthStore<T>> Encode<T>(List<T> rawData) where T : ColorModel.RGB
+        public static List<Interfaces.IEncodable> Encode<T>(List<T> rawData) where T : ColorModel.RGB
         {
-            var encodedData = new List<RunLengthStore<T>>();
+            var encodedData = new List<Interfaces.IEncodable>();
 
             var iterator = 0;
 
@@ -44,7 +44,7 @@ namespace ImageCompression.Encoders
             return encodedData;
         }
 
-        public static List<RunLengthStore<T>> Encode<T>(T[,] rawData) where T : ColorModel.RGB
+        public static List<Interfaces.IEncodable> Encode<T>(T[,] rawData) where T : ColorModel.RGB
         {
             var rawDataAs1DList = rawData.Cast<T>().ToList();
 

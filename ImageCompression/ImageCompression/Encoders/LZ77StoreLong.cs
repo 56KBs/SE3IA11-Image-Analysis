@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Encoders
 {
-    public class LZ77StoreLong<T> : ILZ77Store<T>
-        where T : ColorModel.RGB
+    public class LZ77StoreLong<T> : LZ77Store
+        where T : Interfaces.IEncodable
     {
-        public bool shortForm { get; private set; }
-
         public int position { get; private set; }
 
         public int length { get; private set; }
@@ -46,6 +44,17 @@ namespace ImageCompression.Encoders
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override byte[] ToByteArray()
+        {
+            var returnByteArray = new byte[3];
+
+            returnByteArray[0] = 0x0000;
+            returnByteArray[1] = (byte)this.position;
+            returnByteArray[2] = (byte)this.length;
+
+            return returnByteArray;
         }
     }
 }

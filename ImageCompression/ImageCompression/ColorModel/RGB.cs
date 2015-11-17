@@ -9,7 +9,7 @@ using ImageCompression.ExtensionMethods;
 
 namespace ImageCompression.ColorModel
 {
-    public class RGB
+    public class RGB : Interfaces.IEncodable
     {
         public enum ColorDepth : int
         {

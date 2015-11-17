@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Encoders
 {
-    public interface ILZ77Store<T> where T : Interfaces.ILZ77able
+    public abstract class LZ77Store : Interfaces.IEncodable
     {
-        bool shortForm { get; }
+        public bool shortForm { get; protected set; }
+
+        public abstract byte[] ToByteArray();
     }
 }

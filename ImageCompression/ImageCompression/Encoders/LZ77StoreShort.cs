@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Encoders
 {
-    public class LZ77StoreShort<T> : ILZ77Store<T>
-        where T : ColorModel.RGB
+    public class LZ77StoreShort<T> : LZ77Store
+        where T : Interfaces.IEncodable
     {
         public T data { get; private set; }
-
-        public bool shortForm { get; private set; }
 
         public LZ77StoreShort(T data)
         {
@@ -43,6 +41,18 @@ namespace ImageCompression.Encoders
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        public override byte[] ToByteArray()
+        {
+            var dataBytes = data.ToByteArray();
+
+            var returnByteArray = new byte[dataBytes.Length + 1];
+
+            returnByteArray[0] = 0x0001;
+            dataBytes.CopyTo(returnByteArray, 1);
+
+            return returnByteArray;
         }
     }
 }
