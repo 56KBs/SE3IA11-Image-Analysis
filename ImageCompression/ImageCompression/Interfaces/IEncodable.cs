@@ -8,6 +8,7 @@ namespace ImageCompression.Interfaces
 {
     public interface IEncodable
     {
-        byte[] ToByteArray();
+        VariableByte[] ToByteArray();
+        byte[] ToFullByteArray();
     }
 }

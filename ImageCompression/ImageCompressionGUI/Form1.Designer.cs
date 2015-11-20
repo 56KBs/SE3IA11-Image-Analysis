@@ -36,8 +36,9 @@
             this.colourDepthToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bitDepthComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.encodingTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.huffmanEncodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runLengthEncodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lZ77CompressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.recompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.originalImageTab = new System.Windows.Forms.TabPage();
@@ -50,8 +51,9 @@
             this.originalSizeLabel = new System.Windows.Forms.Label();
             this.originalSizeLabelBytes = new System.Windows.Forms.Label();
             this.compressedSizeLabel = new System.Windows.Forms.Label();
+            this.compressedSizeLabelBytes = new System.Windows.Forms.Label();
             this.compressionRatioLabel = new System.Windows.Forms.Label();
-            this.recompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compressionRatio = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -96,6 +98,7 @@
             this.saveCompressedToolStripMenuItem.Name = "saveCompressedToolStripMenuItem";
             this.saveCompressedToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.saveCompressedToolStripMenuItem.Text = "Save Compressed";
+            this.saveCompressedToolStripMenuItem.Click += new System.EventHandler(this.saveCompressedToolStripMenuItem_Click);
             // 
             // compressionSettingsToolStripMenuItem
             // 
@@ -113,7 +116,6 @@
             this.colourDepthToolStripMenuItem.Name = "colourDepthToolStripMenuItem";
             this.colourDepthToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.colourDepthToolStripMenuItem.Text = "Colour Depth";
-            this.colourDepthToolStripMenuItem.Click += new System.EventHandler(this.colourDepthToolStripMenuItem_Click);
             // 
             // bitDepthComboBox
             // 
@@ -125,28 +127,37 @@
             "24 Bit"});
             this.bitDepthComboBox.Name = "bitDepthComboBox";
             this.bitDepthComboBox.Size = new System.Drawing.Size(121, 23);
-            this.bitDepthComboBox.Click += new System.EventHandler(this.toolStripComboBox1_Click);
+            this.bitDepthComboBox.SelectedIndexChanged += new System.EventHandler(this.bitDepthComboBox_SelectionIndexChanged);
             // 
             // encodingTypeToolStripMenuItem
             // 
             this.encodingTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.huffmanEncodingToolStripMenuItem,
-            this.runLengthEncodingToolStripMenuItem});
+            this.runLengthEncodingToolStripMenuItem,
+            this.lZ77CompressionToolStripMenuItem});
             this.encodingTypeToolStripMenuItem.Name = "encodingTypeToolStripMenuItem";
             this.encodingTypeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.encodingTypeToolStripMenuItem.Text = "Encoding Type";
-            // 
-            // huffmanEncodingToolStripMenuItem
-            // 
-            this.huffmanEncodingToolStripMenuItem.Name = "huffmanEncodingToolStripMenuItem";
-            this.huffmanEncodingToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-            this.huffmanEncodingToolStripMenuItem.Text = "Huffman Encoding";
             // 
             // runLengthEncodingToolStripMenuItem
             // 
             this.runLengthEncodingToolStripMenuItem.Name = "runLengthEncodingToolStripMenuItem";
             this.runLengthEncodingToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.runLengthEncodingToolStripMenuItem.Text = "Run Length Encoding";
+            this.runLengthEncodingToolStripMenuItem.Click += new System.EventHandler(this.runLengthEncodingToolStripMenuItem_Click);
+            // 
+            // lZ77CompressionToolStripMenuItem
+            // 
+            this.lZ77CompressionToolStripMenuItem.Name = "lZ77CompressionToolStripMenuItem";
+            this.lZ77CompressionToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.lZ77CompressionToolStripMenuItem.Text = "LZ77 Compression";
+            this.lZ77CompressionToolStripMenuItem.Click += new System.EventHandler(this.lZ77CompressionToolStripMenuItem_Click);
+            // 
+            // recompressToolStripMenuItem
+            // 
+            this.recompressToolStripMenuItem.Name = "recompressToolStripMenuItem";
+            this.recompressToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
+            this.recompressToolStripMenuItem.Text = "Preview";
+            this.recompressToolStripMenuItem.Click += new System.EventHandler(this.recompressToolStripMenuItem_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -244,7 +255,9 @@
             this.flowLayoutPanel1.Controls.Add(this.originalSizeLabel);
             this.flowLayoutPanel1.Controls.Add(this.originalSizeLabelBytes);
             this.flowLayoutPanel1.Controls.Add(this.compressedSizeLabel);
+            this.flowLayoutPanel1.Controls.Add(this.compressedSizeLabelBytes);
             this.flowLayoutPanel1.Controls.Add(this.compressionRatioLabel);
+            this.flowLayoutPanel1.Controls.Add(this.compressionRatio);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 480);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -281,22 +294,35 @@
             this.compressedSizeLabel.TabIndex = 1;
             this.compressedSizeLabel.Text = "Compressed Size (bytes):";
             // 
+            // compressedSizeLabelBytes
+            // 
+            this.compressedSizeLabelBytes.AutoSize = true;
+            this.compressedSizeLabelBytes.Location = new System.Drawing.Point(270, 5);
+            this.compressedSizeLabelBytes.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.compressedSizeLabelBytes.Name = "compressedSizeLabelBytes";
+            this.compressedSizeLabelBytes.Size = new System.Drawing.Size(13, 13);
+            this.compressedSizeLabelBytes.TabIndex = 4;
+            this.compressedSizeLabelBytes.Text = "0";
+            // 
             // compressionRatioLabel
             // 
             this.compressionRatioLabel.AutoSize = true;
-            this.compressionRatioLabel.Location = new System.Drawing.Point(277, 5);
+            this.compressionRatioLabel.Location = new System.Drawing.Point(296, 5);
             this.compressionRatioLabel.Margin = new System.Windows.Forms.Padding(10, 5, 3, 0);
             this.compressionRatioLabel.Name = "compressionRatioLabel";
             this.compressionRatioLabel.Size = new System.Drawing.Size(98, 13);
             this.compressionRatioLabel.TabIndex = 2;
             this.compressionRatioLabel.Text = "Compression Ratio:";
             // 
-            // recompressToolStripMenuItem
+            // compressionRatio
             // 
-            this.recompressToolStripMenuItem.Name = "recompressToolStripMenuItem";
-            this.recompressToolStripMenuItem.Size = new System.Drawing.Size(83, 20);
-            this.recompressToolStripMenuItem.Text = "Recompress";
-            this.recompressToolStripMenuItem.Click += new System.EventHandler(this.recompressToolStripMenuItem_Click);
+            this.compressionRatio.AutoSize = true;
+            this.compressionRatio.Location = new System.Drawing.Point(400, 5);
+            this.compressionRatio.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.compressionRatio.Name = "compressionRatio";
+            this.compressionRatio.Size = new System.Drawing.Size(27, 13);
+            this.compressionRatio.TabIndex = 5;
+            this.compressionRatio.Text = "N/A";
             // 
             // Form1
             // 
@@ -344,15 +370,17 @@
         private System.Windows.Forms.PictureBox originalPictureBox;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.PictureBox compressedPictureBox;
-        private System.Windows.Forms.Label originalSizeLabelBytes;
         private System.Windows.Forms.ToolStripMenuItem compressionSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem colourDepthToolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox bitDepthComboBox;
         private System.Windows.Forms.ToolStripMenuItem saveCompressedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem encodingTypeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem huffmanEncodingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runLengthEncodingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recompressToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lZ77CompressionToolStripMenuItem;
+        private System.Windows.Forms.Label originalSizeLabelBytes;
+        private System.Windows.Forms.Label compressedSizeLabelBytes;
+        private System.Windows.Forms.Label compressionRatio;
     }
 }
 

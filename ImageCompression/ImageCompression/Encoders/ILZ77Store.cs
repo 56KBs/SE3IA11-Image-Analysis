@@ -10,6 +10,8 @@ namespace ImageCompression.Encoders
     {
         public bool shortForm { get; protected set; }
 
-        public abstract byte[] ToByteArray();
+        public abstract VariableByte[] ToByteArray();
+
+        public abstract byte[] ToFullByteArray();
     }
 }

@@ -26,43 +26,43 @@ namespace ImageCompression.ColorModel
             B
         };
 
-        public Component R { get; set; }
+        public VariableByte R { get; set; }
 
-        public Component G { get; set; }
+        public VariableByte G { get; set; }
 
-        public Component B { get; set; }
+        public VariableByte B { get; set; }
 
         public ColorDepth bits { get; private set; }
 
         public RGB(byte R, byte G, byte B, ColorDepth bitDepth)
         {
-            this.R = this.MakeComponent(Channels.R, bitDepth, R);
-            this.G = this.MakeComponent(Channels.G, bitDepth, G);
-            this.B = this.MakeComponent(Channels.B, bitDepth, B);
+            this.R = this.MakeVariableByte(Channels.R, bitDepth, R);
+            this.G = this.MakeVariableByte(Channels.G, bitDepth, G);
+            this.B = this.MakeVariableByte(Channels.B, bitDepth, B);
 
             this.bits = bitDepth;
         }
 
         public RGB(Component R, Component G, Component B, ColorDepth bitDepth)
         {
-            this.R = this.MakeComponent(Channels.R, bitDepth, R.ToByte());
-            this.G = this.MakeComponent(Channels.G, bitDepth, G.ToByte());
-            this.B = this.MakeComponent(Channels.B, bitDepth, B.ToByte());
+            this.R = this.MakeVariableByte(Channels.R, bitDepth, R.ToFullByte());
+            this.G = this.MakeVariableByte(Channels.G, bitDepth, G.ToFullByte());
+            this.B = this.MakeVariableByte(Channels.B, bitDepth, B.ToFullByte());
 
             this.bits = bitDepth;
         }
 
-        private Component MakeComponent(Channels channel, ColorDepth bitDepth, byte value)
+        private VariableByte MakeVariableByte(Channels channel, ColorDepth bitDepth, byte value)
         {
             if (bitDepth == ColorDepth.Eight)
             {
                 if (channel == Channels.B)
                 {
-                    return new Component(value, Component.Bits.Two);
+                    return new VariableByte(value, VariableByte.Bits.Two);
                 }
                 else
                 {
-                    return new Component(value, Component.Bits.Three);
+                    return new VariableByte(value, VariableByte.Bits.Three);
                 }
             }
             else
@@ -70,17 +70,17 @@ namespace ImageCompression.ColorModel
                 // Get the component values as hex
                 var componentBitsInt = (byte)(Math.Pow(2, (int)bitDepth / 3) - 1);
 
-                var componentBits = (Component.Bits)componentBitsInt;
-                return new Component(value, componentBits);
+                var componentBits = (VariableByte.Bits)componentBitsInt;
+                return new VariableByte(value, componentBits);
             }
         }
 
         public RGB ToDepth(ColorDepth bitDepth)
         {
-            return new RGB(this.R, this.G, this.B, bitDepth);
+            return new RGB(this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte(), bitDepth);
         }
 
-        public Component SelectChannel(Channels channel)
+        public VariableByte SelectChannel(Channels channel)
         {
             switch (channel)
             {
@@ -117,9 +117,14 @@ namespace ImageCompression.ColorModel
             return String.Concat(R, ",", G, ",", B);
         }
 
-        public byte[] ToByteArray()
+        public VariableByte[] ToByteArray()
         {
-            return new byte[] { R.ToByte(), G.ToByte(), G.ToByte() };
+            return new VariableByte[] { R, G, B };
+        }
+
+        public byte[] ToFullByteArray()
+        {
+            return new byte[] { R.ToFullByte(), G.ToFullByte(), B.ToFullByte() };
         }
 
         public override bool Equals(object obj)

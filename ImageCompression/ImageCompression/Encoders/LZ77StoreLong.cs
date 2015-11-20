@@ -46,11 +46,22 @@ namespace ImageCompression.Encoders
             return base.GetHashCode();
         }
 
-        public override byte[] ToByteArray()
+        public override VariableByte[] ToByteArray()
+        {
+            var returnByteArray = new VariableByte[3];
+
+            returnByteArray[0] = VariableByte.Zero;
+            returnByteArray[1] = new VariableByte((byte)this.position, VariableByte.Bits.Eight);
+            returnByteArray[2] = new VariableByte((byte)this.length, VariableByte.Bits.Eight);
+
+            return returnByteArray;
+        }
+
+        public override byte[] ToFullByteArray()
         {
             var returnByteArray = new byte[3];
 
-            returnByteArray[0] = 0x0000;
+            returnByteArray[0] = 0x00;
             returnByteArray[1] = (byte)this.position;
             returnByteArray[2] = (byte)this.length;
 

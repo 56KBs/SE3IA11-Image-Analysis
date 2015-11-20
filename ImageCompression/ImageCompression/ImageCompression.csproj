@@ -42,6 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompressionFlags.cs" />
+    <Compile Include="ExtensionMethods\BitsExtensions.cs" />
+    <Compile Include="ExtensionMethods\ByteExtensions.cs" />
+    <Compile Include="Helpers\BytePacker.cs" />
+    <Compile Include="VariableByte.cs" />
     <Compile Include="ColorModel\Component.cs" />
     <Compile Include="ColorModel\RGB.cs" />
     <Compile Include="Encoders\Huffman.cs" />

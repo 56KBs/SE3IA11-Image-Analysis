@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ImageCompression.Helpers
 {
-    static class Int
+    public static class Int
     {
-        public static int BinaryLog(int number)
+        public static int BitLength(int number)
         {
-            return (int)Math.Log(number, 2);
+            return (int)Math.Log(number, 2) + 1;
         }
     }
 }

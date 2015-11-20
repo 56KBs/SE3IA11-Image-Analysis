@@ -31,14 +31,26 @@ namespace ImageCompression.Encoders
             }
         }
 
-        public byte[] ToByteArray()
+        public VariableByte[] ToByteArray()
         {
             var dataBytes = data.ToByteArray();
 
-            var returnByteArray = new byte[dataBytes.Length];
+            var returnByteArray = new VariableByte[dataBytes.Length + 1];
 
             dataBytes.CopyTo(returnByteArray, 0);
-            returnByteArray[dataBytes.Length - 1] = (byte)this.length;
+            returnByteArray[dataBytes.Length] = new VariableByte((byte)this.length, VariableByte.Bits.Eight);
+
+            return returnByteArray;
+        }
+
+        public byte[] ToFullByteArray()
+        {
+            var dataBytes = data.ToFullByteArray();
+
+            var returnByteArray = new byte[dataBytes.Length + 1];
+
+            dataBytes.CopyTo(returnByteArray, 0);
+            returnByteArray[dataBytes.Length] = (byte)this.length;
 
             return returnByteArray;
         }

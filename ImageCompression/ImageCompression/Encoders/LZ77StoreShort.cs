@@ -43,13 +43,25 @@ namespace ImageCompression.Encoders
             return base.GetHashCode();
         }
 
-        public override byte[] ToByteArray()
+        public override VariableByte[] ToByteArray()
         {
             var dataBytes = data.ToByteArray();
 
+            var returnByteArray = new VariableByte[dataBytes.Length + 1];
+
+            returnByteArray[0] = VariableByte.One;
+            dataBytes.CopyTo(returnByteArray, 1);
+
+            return returnByteArray;
+        }
+
+        public override byte[] ToFullByteArray()
+        {
+            var dataBytes = data.ToFullByteArray();
+
             var returnByteArray = new byte[dataBytes.Length + 1];
 
-            returnByteArray[0] = 0x0001;
+            returnByteArray[0] = 0x01;
             dataBytes.CopyTo(returnByteArray, 1);
 
             return returnByteArray;

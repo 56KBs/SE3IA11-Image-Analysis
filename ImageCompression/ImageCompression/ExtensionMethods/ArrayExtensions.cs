@@ -38,5 +38,35 @@ namespace ImageCompression.ExtensionMethods
             // Return the array
             return convertedArray;
         }
+
+        /// <summary>
+        /// Flattens a 2D array into a 1D array
+        /// </summary>
+        /// <typeparam name="T">Type of array</typeparam>
+        /// <param name="inputArray">Array to flatten</param>
+        /// <returns>1D form of the 2D array</returns>
+        public static T[] Flatten<T>(this T[,] inputArray)
+        {
+            // Get the length and set up an array based on it
+            var inputLength = inputArray.Length;
+            var flatArray = new T[inputLength];
+
+            // Keep an index counter for the 1D array
+            var indexCounter = 0;
+
+            // Loop over the 2D array
+            for (var i = 0; i < inputArray.GetLength(0); i++)
+            {
+                for (var j = 0; j < inputArray.GetLength(1); j++)
+                {
+                    // Add each item to the flat array, increase index counter
+                    flatArray[indexCounter] = inputArray[i, j];
+                    indexCounter++;
+                }
+            }
+
+            // Return data
+            return flatArray;
+        }
     }
 }
