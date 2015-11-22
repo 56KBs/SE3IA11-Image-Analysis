@@ -78,7 +78,24 @@ namespace ImageCompression.ExtensionMethods
              * Result.LastBits(start + 1)
              */
 
-            return ((byte)(b >> (8 - count))).GetLastBits(startPosition + 1);
+            // Make a mask for this specific offset request
+            var mask = "";
+
+            for (var i = 1; i <= 8; i++)
+            {
+                if (i >= startPosition && i < startPosition + count)
+                {
+                    mask += "1";
+                }
+                else
+                {
+                    mask += "0";
+                }
+            }
+
+            var bitMask = (byte)int.Parse(mask);
+
+            return (byte)((byte)(b & bitMask) >> (8 - startPosition - count));
         }
 
         public static byte PushBits(this byte b, byte v, ref int byteBitsRemaining, int variableLength)
@@ -98,40 +115,39 @@ namespace ImageCompression.ExtensionMethods
              * Byte | Push
              */
 
-            if (byteBitsRemaining - variableLength == 0)
+            // Recalculate the bits remaining
+            var newByteBitsRemaining = byteBitsRemaining - variableLength;
+
+            // If the data is a byte and we have a full byte empty, push it on
+            if (byteBitsRemaining == 8 && variableLength == 8)
             {
-                b = (byte)(b | v);
+                byteBitsRemaining -= variableLength;
 
-                byteBitsRemaining = 0;
-
-                return b;
+                return (byte)(b | v);
             }
+            // Pad the data and push our data onto it
             else
             {
-                if (byteBitsRemaining == 8)
-                {
+                byteBitsRemaining -= variableLength;
 
-                }
-                else
-                {
-                    var shiftedPush = v << (byteBitsRemaining - variableLength);
-
-                    byteBitsRemaining -= variableLength;
-
-                    b = (byte)(b | shiftedPush);
-
-                    return b;
-                }
+                return (byte)(b.Pad(variableLength) | v);
             }
         }
 
         public static byte Pad(this byte b, ref int byteBitsRemaining)
         {
+            // Pad the byte so the data is shifted correctly for reading
             b = (byte)(b << byteBitsRemaining);
 
             byteBitsRemaining -= byteBitsRemaining;
 
             return b;
+        }
+
+        public static byte Pad(this byte b, int byteBitsRemaining)
+        {
+            // Pad the byte so the data is shifted correctly for reading
+            return (byte)(b << byteBitsRemaining);
         }
     }
 }

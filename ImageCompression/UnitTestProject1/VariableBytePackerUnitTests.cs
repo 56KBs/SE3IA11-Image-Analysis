@@ -16,14 +16,14 @@ namespace UnitTestProject1
             data.Add(
                 new VariableByte[]
                 {
-                    new VariableByte(1, VariableByte.Bits.One),
-                    new VariableByte(12, VariableByte.Bits.Four)
+                    new VariableByte(1, VariableByte.Bits.One), // 1
+                    new VariableByte(12, VariableByte.Bits.Four) // 1100
                 }
             );
 
-            var packedData = ImageCompression.Helpers.BytePacker.Pack(data);
+            var packedData = ImageCompression.Helpers.BytePacker.Pack(data); // Expect: 11100 -> Padded to 11100000
 
-            var result = new byte[] { 0x1C };
+            var result = new byte[] { 0xE0 };
 
             CollectionAssert.AreEqual(result, packedData);
         }
@@ -36,14 +36,14 @@ namespace UnitTestProject1
             data.Add(
                 new VariableByte[]
                 {
-                    new VariableByte(5, VariableByte.Bits.Three),
-                    new VariableByte(45, VariableByte.Bits.Six)
+                    new VariableByte(5, VariableByte.Bits.Three), // 101
+                    new VariableByte(45, VariableByte.Bits.Six) // 101101
                 }
             );
 
-            var packedData = ImageCompression.Helpers.BytePacker.Pack(data);
+            var packedData = ImageCompression.Helpers.BytePacker.Pack(data); // Expect 10110110 1 -> Padded to 10110110 10000000
 
-            var result = new byte[] { 0xB6, 0x01 };
+            var result = new byte[] { 0xB6, 0x80 };
 
             CollectionAssert.AreEqual(result, packedData);
         }

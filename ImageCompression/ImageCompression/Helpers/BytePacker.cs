@@ -96,7 +96,8 @@ namespace ImageCompression.Helpers
             else
             {
                 // Get the bits that will fit
-                var partialByteStart = (byte)(variableByte.ToFullByte() >> byteBitsRemaining);
+                var partialByteStart = variableByte.ToFullByte().GetOffsetBits(8 - variableByteLength, byteBitsRemaining);
+                //var partialByteStart = (byte)(variableByte.ToFullByte() >> byteBitsRemaining);
 
                 var remainingBits = variableByteLength - byteBitsRemaining;
 
@@ -114,7 +115,7 @@ namespace ImageCompression.Helpers
                 var partialByteEnd = variableByte.ToFullByte().GetLastBits(remainingBits);
 
                 // Push the byte in
-                byteList[byteListIndex] = byteList[byteListIndex].PushBits(partialByteStart, ref byteBitsRemaining, byteBitsRemaining);
+                byteList[byteListIndex] = byteList[byteListIndex].PushBits(partialByteEnd, ref byteBitsRemaining, remainingBits);
                 if (byteBitsRemaining == 0)
                 {
                     byteList.Add(0);
