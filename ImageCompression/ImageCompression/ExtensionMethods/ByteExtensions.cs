@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageCompression.ExtensionMethods;
+using System.Collections;
 
 namespace ImageCompression.ExtensionMethods
 {
@@ -79,9 +80,19 @@ namespace ImageCompression.ExtensionMethods
              */
 
             // Make a mask for this specific offset request
+            var bitMaskTwo = (byte)0;
+
+            for (var i = 0; i < 8; i++)
+            {
+                if (i >= startPosition && i < startPosition + count)
+                {
+                    bitMaskTwo += (byte)Math.Pow(2, i);
+                }
+            }
+
             var mask = "";
 
-            for (var i = 1; i <= 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 if (i >= startPosition && i < startPosition + count)
                 {
@@ -93,7 +104,12 @@ namespace ImageCompression.ExtensionMethods
                 }
             }
 
-            var bitMask = (byte)int.Parse(mask);
+            var bitMask = byte.Parse(mask);
+
+            var masking = (byte)(b & bitMask);
+            var shiftCount = (8 - startPosition - count);
+
+            var result = (byte)(masking >> shiftCount);
 
             return (byte)((byte)(b & bitMask) >> (8 - startPosition - count));
         }

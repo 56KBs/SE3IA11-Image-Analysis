@@ -56,8 +56,8 @@ namespace ImageCompressionGUI
                         byteReader.Read(intStore, 0, 4);
                         this.height = BitConverter.ToInt32(intStore, 0);
 
-                        this.compressedForm = new byte[byteReader.Length - 1];
-                        byteReader.Read(this.compressedForm, 0, (int)(byteReader.Length - 1));
+                        this.compressedForm = new byte[byteReader.Length - 9];
+                        byteReader.Read(this.compressedForm, 0, this.compressedForm.Length);
 
                         this.Decompress();
                     }
