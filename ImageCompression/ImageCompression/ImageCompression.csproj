@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitReader.cs" />
     <Compile Include="CompressionFlags.cs" />
     <Compile Include="ExtensionMethods\BitsExtensions.cs" />
     <Compile Include="ExtensionMethods\ByteExtensions.cs" />
@@ -71,9 +72,7 @@
     <Compile Include="ImageIO\Write.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Decoders\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

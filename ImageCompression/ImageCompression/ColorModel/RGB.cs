@@ -80,6 +80,11 @@ namespace ImageCompression.ColorModel
             return new RGB(this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte(), bitDepth);
         }
 
+        public Color ToColor()
+        {
+            return Color.FromArgb(0, this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte());
+        }
+
         public VariableByte SelectChannel(Channels channel)
         {
             switch (channel)
@@ -114,7 +119,8 @@ namespace ImageCompression.ColorModel
 
         public override String ToString()
         {
-            return String.Concat(R, ",", G, ",", B);
+            return this.R.ToString() + "," + this.G.ToString() + "," + this.B.ToString();
+            //return String.Concat(R, ",", G, ",", B);
         }
 
         public VariableByte[] ToByteArray()
@@ -140,7 +146,7 @@ namespace ImageCompression.ColorModel
                 return false;
             }
 
-            return this.ToString() == rgb.ToString();
+            return (this.R.ToFullByte() == rgb.R.ToFullByte()) && (this.G.ToFullByte() == rgb.G.ToFullByte()) && (this.B.ToFullByte() == rgb.B.ToFullByte());
         }
 
         public override int GetHashCode()

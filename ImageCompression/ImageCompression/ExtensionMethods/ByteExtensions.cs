@@ -80,38 +80,17 @@ namespace ImageCompression.ExtensionMethods
              */
 
             // Make a mask for this specific offset request
-            var bitMaskTwo = (byte)0;
+            var bitMask = (byte)(1 << (8 - startPosition));
+            bitMask = (byte)(bitMask - (byte)(1 << (8 - startPosition - count)));
 
-            for (var i = 0; i < 8; i++)
-            {
-                if (i >= startPosition && i < startPosition + count)
-                {
-                    bitMaskTwo += (byte)Math.Pow(2, i);
-                }
-            }
+            return (byte)((b & bitMask) >> (8 - startPosition - count));
+        }
 
-            var mask = "";
+        public static bool GetSingleBit(this byte b, int startPosition)
+        {
+            var byteVersion = b.GetOffsetBits(startPosition, 1);
 
-            for (var i = 0; i < 8; i++)
-            {
-                if (i >= startPosition && i < startPosition + count)
-                {
-                    mask += "1";
-                }
-                else
-                {
-                    mask += "0";
-                }
-            }
-
-            var bitMask = byte.Parse(mask);
-
-            var masking = (byte)(b & bitMask);
-            var shiftCount = (8 - startPosition - count);
-
-            var result = (byte)(masking >> shiftCount);
-
-            return (byte)((byte)(b & bitMask) >> (8 - startPosition - count));
+            return Convert.ToBoolean(byteVersion);
         }
 
         public static byte PushBits(this byte b, byte v, ref int byteBitsRemaining, int variableLength)
@@ -148,6 +127,11 @@ namespace ImageCompression.ExtensionMethods
 
                 return (byte)(b.Pad(variableLength) | v);
             }
+        }
+
+        public static byte PushBit(this byte b, bool v)
+        {
+            return (byte)((byte)(b << 1) | Convert.ToByte(v));
         }
 
         public static byte Pad(this byte b, ref int byteBitsRemaining)

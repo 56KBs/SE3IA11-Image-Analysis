@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ImageCompression.Helpers;
 using ImageCompression.ExtensionMethods;
+using System.IO;
 
 namespace ImageCompression.Encoders
 {
@@ -60,7 +61,16 @@ namespace ImageCompression.Encoders
             {
                 var relativeMatchPosition = 0;
                 var matchLength = LZ77.LongestMatch(window.ToArray(), lookahead.ToArray(), out relativeMatchPosition);
-                var matchPosition = position - relativeMatchPosition;
+                var matchPosition = window.Count - relativeMatchPosition;
+
+                if (matchLength > 255 || matchPosition > 255)
+                {
+                    var how = 0;
+                }
+                if (matchPosition == 0)
+                {
+                    var wtf = 0;
+                }
 
                 var incrementBy = 1;
 
@@ -103,6 +113,7 @@ namespace ImageCompression.Encoders
         }
 
         public static int LongestMatch<T>(T[] window, T[] buffer, out int longestMatchStart)
+            where T : Interfaces.IEncodable
         {
             var windowSize = window.Length;
             var bufferSize = buffer.Length;
@@ -114,7 +125,8 @@ namespace ImageCompression.Encoders
             var currentMatch = 0;
 
             // Can the last item in the window match the first buffer item?
-            if (window[windowSize - 1].Equals(buffer[0]))
+            //if (window[windowSize - 1].Equals(buffer[0]))
+            if (window[windowSize - 1].ToFullByteArray().SequenceEqual(buffer[0].ToFullByteArray()))
             {
                 // If this is true then the last item may repeatedly match along the buffer
                 currentMatchStart = windowSize - 1;
@@ -145,7 +157,8 @@ namespace ImageCompression.Encoders
             for (var i = 0; (windowSize - i) > longestMatch; i++)
             {
                 // If we have a starting match
-                if (window[i].Equals(buffer[0]))
+                //if (window[i].Equals(buffer[0]))
+                if (window[i].ToFullByteArray().SequenceEqual(buffer[0].ToFullByteArray()))
                 {
                     currentMatchStart = i;
                     currentMatch++;
@@ -193,7 +206,8 @@ namespace ImageCompression.Encoders
                 {
                     var longData = (LZ77StoreLong<T>)encodedData[i];
 
-                    var currentPosition = i - longData.position;
+                    var currentPosition = decodedData.Count - longData.position;
+
                     var copyLength = longData.length;
 
                     while (copyLength > 0)
@@ -221,99 +235,41 @@ namespace ImageCompression.Encoders
             return decodedData.ToArray();
         }
 
-        private static bool IsLongForm(byte b, int byteBitsRemaining)
+        private static bool IsLongForm(ref BitReader bitReader)
         {
-            return b.GetFirstBits(1) >> (byteBitsRemaining - 1) == 0;
+            return !bitReader.ReadBoolean();
         }
 
-        private static byte GetByte(ref byte[] data, ref int byteIndex, ref int byteBitsRemaining, int bitLength)
-        {
-            var returnByte = (byte)0;
-
-            // If we can directly take the information out, do so
-            if (byteBitsRemaining == bitLength)
-            {
-                returnByte = data[byteIndex].GetOffsetBits(8 - byteBitsRemaining, bitLength);
-
-                byteIndex++;
-                byteBitsRemaining = 8;
-            }
-            // We only need to take our section out of the bit
-            else if (byteBitsRemaining > bitLength)
-            {
-                returnByte = data[byteIndex].GetOffsetBits(8 - byteBitsRemaining, bitLength);
-                byteBitsRemaining -= bitLength;
-            }
-            // We need to span two bits to get our data
-            else
-            {
-                // Get the data from the first byte
-                var partialByteStart = data[byteIndex].GetLastBits(byteBitsRemaining);
-                var bitsToExtract = bitLength - byteBitsRemaining;
-
-                byteIndex++;
-                byteBitsRemaining = 8;
-
-                // Get the data from the second byte
-                var partialByteEnd = data[byteIndex].GetFirstBits(bitsToExtract);
-                byteBitsRemaining -= bitsToExtract;
-
-                // Merge the two partials
-                returnByte = (byte)((byte)(partialByteStart << (bitLength - byteBitsRemaining)) | partialByteEnd);
-            }
-
-            return returnByte;
-        }
-
-        public static LZ77Store[] BytesToLZ77StoreArray<T>(byte[] byteData, ColorModel.RGB.ColorDepth colourDepth)
-            where T : Interfaces.IEncodable
+        public static LZ77Store[] DecodeBinaryStream(ref BinaryReader binaryReader, ColorModel.RGB.ColorDepth colorDepth)
         {
             var dataList = new List<LZ77Store>();
 
-            var byteIndex = 0;
-            var byteBitsRemaining = 8;
+            var bitReader = new BitReader(binaryReader.BaseStream);
 
-            while (byteIndex < byteData.Length)
+            // No packed data is the size of a byte, the remaining data will be picked up anyway
+            while (bitReader.BaseStream.Position < bitReader.BaseStream.Length - 1)
             {
-                if (LZ77.IsLongForm(byteData[byteIndex], byteBitsRemaining))
+                // If is long form
+                if (IsLongForm(ref bitReader))
                 {
-                    if (byteBitsRemaining == 1)
-                    {
-                        byteIndex++;
-                        byteBitsRemaining = 8;
-                    }
-                    else
-                    {
-                        byteBitsRemaining--;
-                    }
-                    
                     dataList.Add(new LZ77StoreLong<ColorModel.RGB>(
-                        LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, 8),
-                        LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, 8)
+                        bitReader.ReadByte(),
+                        bitReader.ReadByte()
                     ));
                 }
+                // If is short form
                 else
                 {
-                    if (byteBitsRemaining == 1)
-                    {
-                        byteIndex++;
-                        byteBitsRemaining = 8;
-                    }
-                    else
-                    {
-                        byteBitsRemaining--;
-                    }
+                    var colorBitLength = (int)colorDepth / 3;
 
-                    var colorBitLength = (int)colourDepth / 3;
-
-                    if (colourDepth == ColorModel.RGB.ColorDepth.Eight)
+                    if (colorDepth == ColorModel.RGB.ColorDepth.Eight)
                     {
                         dataList.Add(new LZ77StoreShort<ColorModel.RGB>(
                             new ColorModel.RGB(
-                                LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, 3),
-                                LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, 3),
-                                LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, 2),
-                                colourDepth
+                                bitReader.ReadSmallBits(3),
+                                bitReader.ReadSmallBits(3),
+                                bitReader.ReadSmallBits(2),
+                                colorDepth
                             )
                         ));
                     }
@@ -321,10 +277,10 @@ namespace ImageCompression.Encoders
                     {
                         dataList.Add(new LZ77StoreShort<ColorModel.RGB>(
                             new ColorModel.RGB(
-                                LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, colorBitLength),
-                                LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, colorBitLength),
-                                LZ77.GetByte(ref byteData, ref byteIndex, ref byteBitsRemaining, colorBitLength),
-                                colourDepth
+                                bitReader.ReadSmallBits(colorBitLength),
+                                bitReader.ReadSmallBits(colorBitLength),
+                                bitReader.ReadSmallBits(colorBitLength),
+                                colorDepth
                             )
                         ));
                     }
@@ -333,7 +289,7 @@ namespace ImageCompression.Encoders
 
             return dataList.ToArray();
         }
-
+ 
         public static Helpers.BytePacker.FrontMasks GetFrontByteMask(int numberToMask)
         {
             switch (numberToMask)

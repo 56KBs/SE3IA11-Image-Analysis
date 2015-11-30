@@ -44,23 +44,19 @@ namespace ImageCompressionGUI
             {
                 if (Path.GetExtension(fileDialog.FileName) == ".miac")
                 {
-                    // Read the flags
-                    using (var byteReader = new FileStream(fileDialog.FileName, FileMode.Open, FileAccess.Read))
-                    {
-                        this.compressionFlags = (byte)byteReader.ReadByte();
+                    // Read the MIAC file
+                    var binaryReader = new BinaryReader(File.Open(fileDialog.FileName, FileMode.Open));
 
-                        var intStore = new byte[4];
-                        byteReader.Read(intStore, 0, 4);
-                        this.width = BitConverter.ToInt32(intStore, 0);
+                    this.compressionFlags = binaryReader.ReadByte();
+                    this.width = binaryReader.ReadInt32();
+                    this.height = binaryReader.ReadInt32();
 
-                        byteReader.Read(intStore, 0, 4);
-                        this.height = BitConverter.ToInt32(intStore, 0);
+                    this.Decompress(ref binaryReader);
 
-                        this.compressedForm = new byte[byteReader.Length - 9];
-                        byteReader.Read(this.compressedForm, 0, this.compressedForm.Length);
+                    // Tidy
+                    binaryReader.Dispose();
 
-                        this.Decompress();
-                    }
+                    this.originalImage = new StandardImage(new Bitmap(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\temp.bmp"));
                 }
                 else
                 {
@@ -113,9 +109,12 @@ namespace ImageCompressionGUI
             }
         }
 
-        private void Decompress()
+        private void Decompress(ref BinaryReader binaryReader)
         {
             var bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour;
+
+            // Default to RGB for now
+            System.Type colorModel = typeof(ImageCompression.ColorModel.RGB);
 
             switch (this.compressionFlags ^ ((byte)CompressionFlags.LZ77 | (byte)CompressionFlags.RunLength))
             {
@@ -133,25 +132,61 @@ namespace ImageCompressionGUI
                     break;
             }
 
+            var decodedData = new List<ImageCompression.Interfaces.IEncodable>();
+
             // If LZ77 is enabled
             if ((this.compressionFlags & (byte)CompressionFlags.LZ77) == (byte)CompressionFlags.LZ77)
             {
-                var decodedData = LZ77.Decode<RGB>(LZ77.BytesToLZ77StoreArray<RGB>(this.compressedForm, bitDepth));
+                // Decode LZ77
+                var decodedLZ77 = LZ77.DecodeBinaryStream(ref binaryReader, bitDepth);
+
+                // If run length is enabled
+                if ((this.compressionFlags & (byte)CompressionFlags.RunLength) == (byte)CompressionFlags.RunLength)
+                {
+                    var fullDecodedLZ77 = LZ77.Decode<RunLengthStore<ImageCompression.ColorModel.RGB>>(decodedLZ77).ToList();
+                }
+                else
+                {
+                    var fullDecodedLZ77 = LZ77.Decode<ImageCompression.ColorModel.RGB>(decodedLZ77).ToList();
+
+                    this.saveTempBitmap(fullDecodedLZ77, width, height);
+                }
             }
 
-
-            /*// If run length is enabled
+            // If run length is enabled
             if ((this.compressionFlags & (byte)CompressionFlags.RunLength) == (byte)CompressionFlags.RunLength)
             {
-                data = RunLength.Encode(this.originalImage.GetPixelMatrix(bitDepth));
+                
             }
             else
             {
-                var flattenedData = this.originalImage.GetPixelMatrix(bitDepth).Flatten();
-                data = flattenedData.ToList<ImageCompression.Interfaces.IEncodable>();
-            }*/
+                
+            }
 
-           
+            // All decoded
+        }
+
+        private void saveTempBitmap(List<ImageCompression.ColorModel.RGB> data, int width, int height)
+        {
+            var bitmap = new Bitmap(width, height);
+
+            var x = 0;
+            var y = 0;
+
+            for (var i = 0; i < data.Count; i++)
+            {
+                bitmap.SetPixel(x, y, data[i].ToColor());
+
+                y++;
+
+                if (y == height)
+                {
+                    y = 0;
+                    x++;
+                }
+            }
+
+            bitmap.Save(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\temp.bmp", System.Drawing.Imaging.ImageFormat.Bmp);            
         }
 
         private void recompressToolStripMenuItem_Click(object sender, EventArgs e)
