@@ -15,10 +15,10 @@ namespace ImageCompressionUnitTests
         [TestMethod]
         public void Component_Constructor_Default()
         {
-            var component = new Component(255, VariableByte.Bits.Eight);
+            var component = new Component(255, 8);
             Assert.AreEqual("255", component.ToString());
 
-            component = new Component(0, VariableByte.Bits.Eight);
+            component = new Component(0, 8);
             Assert.AreEqual("0", component.ToString());
 
             component = new Component(255);
@@ -31,39 +31,39 @@ namespace ImageCompressionUnitTests
         [TestMethod]
         public void Component_Constructor_DifferingBitSizes()
         {
-            var component = new Component(127, VariableByte.Bits.Seven);
+            var component = new Component(127, 7);
             Assert.AreEqual("127", component.ToString());
 
-            component = new Component(12, VariableByte.Bits.Five);
+            component = new Component(12, 5);
             Assert.AreEqual("12", component.ToString());
 
-            component = new Component(3, VariableByte.Bits.Three);
+            component = new Component(3, 3);
             Assert.AreEqual("3", component.ToString());
 
-            component = new Component(30, VariableByte.Bits.Six);
+            component = new Component(30, 6);
             Assert.AreEqual("30", component.ToString());
         }
 
         [TestMethod]
         public void Component_Constructor_BitResizing()
         {
-            var component = new Component(255, VariableByte.Bits.Four);
+            var component = new Component(255, 4);
             Assert.AreEqual("15", component.ToString());
 
-            component = new Component(63, VariableByte.Bits.Two);
+            component = new Component(63, 2);
             Assert.AreEqual("0", component.ToString());
         }
 
         [TestMethod]
         public void Component_Equality()
         {
-            var first = new Component(127, VariableByte.Bits.Eight);
-            var second = new Component(127, VariableByte.Bits.Seven);
+            var first = new Component(127, 8);
+            var second = new Component(127, 7);
 
             Assert.IsTrue(first.Equals(second));
 
-            var third = new Component(120, VariableByte.Bits.Eight);
-            var fourth = new Component(120, VariableByte.Bits.Eight);
+            var third = new Component(120, 8);
+            var fourth = new Component(120, 8);
 
             Assert.IsTrue(third.Equals(fourth));
         }
@@ -73,9 +73,9 @@ namespace ImageCompressionUnitTests
         [TestMethod]
         public void ComponentTests2()
         {
-            var test = new Component(255, VariableByte.Bits.Eight);
+            var test = new Component(255, 8);
 
-            var test2 = new Component(255, VariableByte.Bits.Four);
+            var test2 = new Component(255, 4);
 
             var testing = Color.FromArgb(0, 255, 123, 43).ToString();
 

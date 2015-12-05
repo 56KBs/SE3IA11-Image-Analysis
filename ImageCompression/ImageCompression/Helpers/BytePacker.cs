@@ -53,7 +53,7 @@ namespace ImageCompression.Helpers
             {
                 foreach (VariableByte byteValue in byteArray)
                 {
-                    var byteValueLength = byteValue.bitLength.ToInt();
+                    var byteValueLength = byteValue.bitLength;
 
                     PackVariableByte(ref byteList, ref byteListIndex, ref byteBitsRemaining, byteValue);
                 }
@@ -78,7 +78,7 @@ namespace ImageCompression.Helpers
 
         private static void PackVariableByte(ref List<byte> byteList, ref int byteListIndex, ref int byteBitsRemaining, VariableByte variableByte)
         {
-            var variableByteLength = variableByte.bitLength.ToInt();
+            var variableByteLength = variableByte.bitLength;
 
             // Can merge in exactly, or with space to go
             if (byteBitsRemaining >= variableByteLength)
@@ -140,7 +140,7 @@ namespace ImageCompression.Helpers
                 {
                     var variableByte = variableByteArray[i];
 
-                    var currentVariableByteLength = variableByte.bitLength.ToInt();
+                    var currentVariableByteLength = variableByte.bitLength;
 
                     // Our variable byte fits perfectly!
                     if (currentPackingLengthRemaining == currentVariableByteLength)

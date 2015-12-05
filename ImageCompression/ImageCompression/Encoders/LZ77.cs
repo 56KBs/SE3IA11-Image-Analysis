@@ -63,15 +63,6 @@ namespace ImageCompression.Encoders
                 var matchLength = LZ77.LongestMatch(window.ToArray(), lookahead.ToArray(), out relativeMatchPosition);
                 var matchPosition = window.Count - relativeMatchPosition;
 
-                if (matchLength > 255 || matchPosition > 255)
-                {
-                    var how = 0;
-                }
-                if (matchPosition == 0)
-                {
-                    var wtf = 0;
-                }
-
                 var incrementBy = 1;
 
                 // Long store needed

@@ -12,5 +12,10 @@ namespace ImageCompression.Helpers
         {
             return (int)Math.Log(number, 2) + 1;
         }
+
+        public static int AsBitMask(int length)
+        {
+            return (1 << length) - 1;
+        }
     }
 }

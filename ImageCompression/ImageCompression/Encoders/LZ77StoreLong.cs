@@ -51,8 +51,8 @@ namespace ImageCompression.Encoders
             var returnByteArray = new VariableByte[3];
 
             returnByteArray[0] = VariableByte.Zero;
-            returnByteArray[1] = new VariableByte((byte)this.position, VariableByte.Bits.Eight);
-            returnByteArray[2] = new VariableByte((byte)this.length, VariableByte.Bits.Eight);
+            returnByteArray[1] = new VariableByte((byte)this.position, 8);
+            returnByteArray[2] = new VariableByte((byte)this.length, 8);
 
             return returnByteArray;
         }

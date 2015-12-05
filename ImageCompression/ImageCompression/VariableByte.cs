@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using ImageCompression.Helpers;
 
 namespace ImageCompression
 {
@@ -11,39 +12,26 @@ namespace ImageCompression
     {
         private byte data { get; set; }
 
-        public Bits bitLength { get; private set; }
+        public int bitLength { get; private set; }
 
         public static VariableByte Zero
         {
-            get { return new VariableByte(0, Bits.One); }
+            get { return new VariableByte(0, 1); }
         }
 
         public static VariableByte One
         {
-            get { return new VariableByte(1, Bits.One); }
+            get { return new VariableByte(1, 1); }
         }
 
-        [Flags]
-        public enum Bits
-        {
-            One = 0x01,
-            Two = 0x03,
-            Three = 0x07,
-            Four = 0x0F,
-            Five = 0x1F,
-            Six = 0x3F,
-            Seven = 0x7F,
-            Eight = 0xFF
-        }
-
-        public VariableByte(byte data, Bits bits)
+        public VariableByte(byte data, int bits)
         {
             this.bitLength = bits;
 
             // If the data is bigger than the bits we want, downscale it to fit
-            if ((data ^ (byte)this.bitLength) > (byte)this.bitLength)
+            if (Helpers.Int.BitLength((int)data) > this.bitLength)
             {
-                this.data = this.Convert(data, Bits.Eight, bits);
+                this.data = this.Convert(data, Helpers.Int.BitLength((int)data), bits);
             }
             else
             {
@@ -51,21 +39,36 @@ namespace ImageCompression
             }
         }
 
-        private byte Convert(byte data, Bits originalBits, Bits newBits)
+        public VariableByte(byte data, int fullBits, int bits)
         {
-            if (originalBits < newBits)
+            this.bitLength = bits;
+
+            // If the data is bigger than the bits we want, downscale it to fit
+            if (fullBits > this.bitLength)
             {
-                return (byte)((int)data << (Helpers.Int.BitLength((int)newBits) - Helpers.Int.BitLength((int)originalBits)));
+                this.data = this.Convert(data, fullBits, bits);
             }
             else
             {
-                return (byte)((int)data >> (Helpers.Int.BitLength((int)originalBits) - Helpers.Int.BitLength((int)newBits)));
+                this.data = data;
+            }
+        }
+
+        private byte Convert(byte data, int originalBits, int newBits)
+        {
+            if (originalBits < newBits)
+            {
+                return (byte)(data << (newBits - originalBits));
+            }
+            else
+            {
+                return (byte)(data >> (originalBits - newBits));
             }
         }
 
         public static explicit operator VariableByte(int v)
         {
-            return new VariableByte((byte)v, (Bits)Enum.Parse(typeof(Bits), Helpers.Int.BitLength(v).ToString()));
+            return new VariableByte((byte)v, Helpers.Int.BitLength(v));
         }
 
         public static explicit operator Complex(VariableByte v)
@@ -101,17 +104,17 @@ namespace ImageCompression
 
         public override string ToString()
         {
-            return (data & (byte)bitLength).ToString();
+            return (data & Helpers.Int.AsBitMask(bitLength)).ToString();
         }
 
         public byte ToFullByte()
         {
-            return (byte)(data & (byte)bitLength);
+            return (byte)(data & Helpers.Int.AsBitMask(bitLength));
         }
 
         public override int GetHashCode()
         {
-            return data & (byte)bitLength;
+            return data & Helpers.Int.AsBitMask(bitLength);
         }
     }
 }

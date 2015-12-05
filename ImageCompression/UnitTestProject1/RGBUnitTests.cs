@@ -30,7 +30,7 @@ namespace UnitTestProject1
             Assert.AreEqual("63,63,63", RGBValue.ToString());
 
             RGBValue = new RGB(124, 61, 255, RGB.ColorDepth.Eighteen);
-            Assert.AreEqual("31,61,63", RGBValue.ToString());
+            Assert.AreEqual("31,15,63", RGBValue.ToString());
 
             RGBValue = new RGB(124, 61, 255, RGB.ColorDepth.Fifteen);
             Assert.AreEqual("15,7,31", RGBValue.ToString());
@@ -44,10 +44,19 @@ namespace UnitTestProject1
             Assert.AreEqual("7,3,0", RGBValueConverted.ToString());
 
             RGBValueConverted = RGBValue.ToDepth(RGB.ColorDepth.Eighteen);
-            Assert.AreEqual("63,31,61", RGBValueConverted.ToString());
+            Assert.AreEqual("63,31,15", RGBValueConverted.ToString());
 
             RGBValueConverted = RGBValue.ToDepth(RGB.ColorDepth.Fifteen);
             Assert.AreEqual("31,15,7", RGBValueConverted.ToString());
+        }
+
+        [TestMethod]
+        public void RGB_Equality()
+        {
+            var RGBValue = new RGB(255, 124, 61, RGB.ColorDepth.TwentyFour);
+            var OtherRGBValue = new RGB(255, 124, 61, RGB.ColorDepth.TwentyFour);
+
+            Assert.AreEqual(RGBValue, OtherRGBValue);
         }
     }
 }

@@ -77,17 +77,12 @@ namespace ImageCompressionGUI
                         this.compressionFlags = (byte)(this.compressionFlags | (byte)CompressionFlags.FifteenBit);
                     }
                     else if (originalPixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb ||
-                             originalPixelFormat == System.Drawing.Imaging.PixelFormat.Canonical)
+                             originalPixelFormat == System.Drawing.Imaging.PixelFormat.Canonical ||
+                             originalPixelFormat == System.Drawing.Imaging.PixelFormat.Format8bppIndexed)
                     {
                         this.bitDepthComboBox.SelectedIndex = 3;
                         // Set the bitmask correctly
                         this.compressionFlags = (byte)(this.compressionFlags | (byte)CompressionFlags.TwentyFourBit);
-                    }
-                    else if (originalPixelFormat == System.Drawing.Imaging.PixelFormat.Format8bppIndexed)
-                    {
-                        this.bitDepthComboBox.SelectedIndex = 0;
-                        // Set the bitmask correctly
-                        this.compressionFlags = (byte)(this.compressionFlags | (byte)CompressionFlags.EightBit);
                     }
                     else
                     {

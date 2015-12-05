@@ -16,8 +16,8 @@ namespace UnitTestProject1
             data.Add(
                 new VariableByte[]
                 {
-                    new VariableByte(1, VariableByte.Bits.One), // 1
-                    new VariableByte(12, VariableByte.Bits.Four) // 1100
+                    new VariableByte(1, 1), // 1
+                    new VariableByte(12, 4) // 1100
                 }
             );
 
@@ -36,8 +36,8 @@ namespace UnitTestProject1
             data.Add(
                 new VariableByte[]
                 {
-                    new VariableByte(5, VariableByte.Bits.Three), // 101
-                    new VariableByte(45, VariableByte.Bits.Six) // 101101
+                    new VariableByte(5, 3), // 101
+                    new VariableByte(45, 6) // 101101
                 }
             );
 
@@ -56,9 +56,9 @@ namespace UnitTestProject1
             data.Add(
                 new VariableByte[]
                 {
-                    new VariableByte(255, VariableByte.Bits.Eight),
-                    new VariableByte(45, VariableByte.Bits.Eight),
-                    new VariableByte(64, VariableByte.Bits.Eight)
+                    new VariableByte(255, 8),
+                    new VariableByte(45, 8),
+                    new VariableByte(64, 8)
                 }
             );
 

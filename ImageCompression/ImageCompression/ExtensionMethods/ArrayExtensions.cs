@@ -26,14 +26,14 @@ namespace ImageCompression.ExtensionMethods
             TOutput[,] convertedArray = new TOutput[width, height];
 
             // Add data into array
-            for (var i = 0; i < width; i++)
+            Parallel.For(0, width, i =>
             {
                 for (var j = 0; j < height; j++)
                 {
                     // Convert the data using the conversion method supplied, ensuring to cast the value to specified type
-                    convertedArray[i, j] = converter((TInput)inputArray.GetValue(i, j));
+                    convertedArray[i, j] = converter(inputArray[i, j]);
                 }
-            }
+            });
 
             // Return the array
             return convertedArray;

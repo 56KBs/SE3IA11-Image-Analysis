@@ -58,26 +58,31 @@ namespace ImageCompression.ColorModel
             {
                 if (channel == Channels.B)
                 {
-                    return new VariableByte(value, VariableByte.Bits.Two);
+                    return new VariableByte(value, 8,  2);
                 }
                 else
                 {
-                    return new VariableByte(value, VariableByte.Bits.Three);
+                    return new VariableByte(value, 8, 3);
                 }
             }
             else
             {
-                // Get the component values as hex
-                var componentBitsInt = (byte)(Math.Pow(2, (int)bitDepth / 3) - 1);
+                var componentBits = (int)bitDepth / 3;
 
-                var componentBits = (VariableByte.Bits)componentBitsInt;
-                return new VariableByte(value, componentBits);
+                return new VariableByte(value, 8, componentBits);
             }
         }
 
         public RGB ToDepth(ColorDepth bitDepth)
         {
-            return new RGB(this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte(), bitDepth);
+            if (this.bits == bitDepth)
+            {
+                return this;
+            }
+            else
+            {
+                return new RGB(this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte(), bitDepth);
+            }
         }
 
         public Color ToColor()
@@ -149,9 +154,29 @@ namespace ImageCompression.ColorModel
             return (this.R.ToFullByte() == rgb.R.ToFullByte()) && (this.G.ToFullByte() == rgb.G.ToFullByte()) && (this.B.ToFullByte() == rgb.B.ToFullByte());
         }
 
+        public static bool operator ==(RGB lhs, RGB rhs)
+        {
+            if (Object.ReferenceEquals(lhs, null))
+            {
+                if (Object.ReferenceEquals(rhs, null))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(RGB lhs, RGB rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return this.R.ToFullByte() ^ this.G.ToFullByte() ^ this.B.ToFullByte();
         }
     }
 }

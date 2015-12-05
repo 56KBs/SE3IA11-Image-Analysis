@@ -38,7 +38,14 @@ namespace ImageCompression
 
         public ColorModel.RGB[,] GetPixelMatrix(ColorModel.RGB.ColorDepth depth)
         {
-            return this.data.data.ConvertAll2D(new Converter<ColorModel.RGB, ColorModel.RGB>(x => x.ToDepth(depth)));
+            if (this.data.data[0, 0].bits == depth)
+            {
+                return this.data.data;
+            }
+            else
+            {
+                return this.data.data.ConvertAll2D(new Converter<ColorModel.RGB, ColorModel.RGB>(x => x.ToDepth(depth)));
+            }
         }
     }
 }

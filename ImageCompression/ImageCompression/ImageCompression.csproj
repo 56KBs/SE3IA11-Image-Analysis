@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,8 +46,9 @@
   <ItemGroup>
     <Compile Include="BitReader.cs" />
     <Compile Include="CompressionFlags.cs" />
-    <Compile Include="ExtensionMethods\BitsExtensions.cs" />
+    <Compile Include="Encoders\HuffmanNode.cs" />
     <Compile Include="ExtensionMethods\ByteExtensions.cs" />
+    <Compile Include="ExtensionMethods\LinqExtensions.cs" />
     <Compile Include="Helpers\BytePacker.cs" />
     <Compile Include="VariableByte.cs" />
     <Compile Include="ColorModel\Component.cs" />

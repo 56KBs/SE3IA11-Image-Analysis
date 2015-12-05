@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
 using ImageCompression;
+using ImageCompression.Helpers;
 
 namespace ImageCompression.ColorModel
 {
@@ -12,22 +13,22 @@ namespace ImageCompression.ColorModel
     {
         private byte data { get; set; }
 
-        private VariableByte.Bits bits { get; set; }
+        private int bits { get; set; }
 
         public Component(byte data)
         {
             this.data = data;
-            this.bits = VariableByte.Bits.Eight;
+            this.bits = 8;
         }
 
-        public Component(byte data, VariableByte.Bits bits)
+        public Component(byte data, int bits)
         {
             this.bits = bits;
 
             // If the data is bigger than the bits we want, downscale it to fit
-            if ((data ^ (byte)this.bits) > (byte)this.bits)
+            if (Helpers.Int.BitLength((int)data) > this.bits)
             {
-                this.data = this.Convert(data, VariableByte.Bits.Eight, bits);
+                this.data = this.Convert(data, 8, bits);
             }
             else
             {
@@ -35,15 +36,15 @@ namespace ImageCompression.ColorModel
             }
         }
 
-        private byte Convert(byte data, VariableByte.Bits originalBits, VariableByte.Bits newBits)
+        private byte Convert(byte data, int originalBits, int newBits)
         {
             if (originalBits < newBits)
             {
-                return (byte)((int)data << (Helpers.Int.BitLength((int)newBits) - Helpers.Int.BitLength((int)originalBits)));
+                return (byte)(data << (newBits - originalBits));
             }
             else
             {
-                return (byte)((int)data >> (Helpers.Int.BitLength((int)originalBits) - Helpers.Int.BitLength((int)newBits)));
+                return (byte)(data >> (originalBits - newBits));
             }
         }
 
@@ -65,7 +66,7 @@ namespace ImageCompression.ColorModel
 
         public override string ToString()
         {
-            return (data & (byte)bits).ToString();
+            return (data & Helpers.Int.AsBitMask(bits)).ToString();
         }
 
         public VariableByte ToByte()

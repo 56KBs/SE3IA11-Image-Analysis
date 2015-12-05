@@ -27,7 +27,7 @@ namespace ImageCompression.ImageData
         {
             this.data = data.Clone() as ColorModel.RGB[,];
 
-            this.fourierData = new FourierMatrix<ColorModel.RGB>(data);
+            //this.fourierData = new FourierMatrix<ColorModel.RGB>(data);
         }
 
         public PixelMatrix(int width, int height)

@@ -59,6 +59,8 @@
     <Compile Include="RunLengthUnitTests.cs" />
     <Compile Include="LZ77UnitTest.cs" />
     <Compile Include="HelpersIntUnitTests.cs" />
+    <Compile Include="HuffmanUnitTests.cs" />
+    <Compile Include="ArrayExtensionsUnitTests.cs" />
     <Compile Include="VariableBytePackerUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
