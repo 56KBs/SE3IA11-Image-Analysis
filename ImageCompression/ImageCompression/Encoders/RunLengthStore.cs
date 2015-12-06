@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageCompression.ExtensionMethods;
 
 namespace ImageCompression.Encoders
 {
@@ -13,10 +14,13 @@ namespace ImageCompression.Encoders
 
         public int length { get; private set; }
 
+        public byte[] bytePattern { get; }
+
         public RunLengthStore(T data, int length)
         {
             this.data = data;
             this.length = length;
+            this.bytePattern = ((byte)8).Merge(this.data.bytePattern);
         }
 
         public override string ToString()
@@ -31,21 +35,9 @@ namespace ImageCompression.Encoders
             }
         }
 
-        public VariableByte[] ToByteArray()
+        public byte[] ToByteArray()
         {
             var dataBytes = data.ToByteArray();
-
-            var returnByteArray = new VariableByte[dataBytes.Length + 1];
-
-            dataBytes.CopyTo(returnByteArray, 0);
-            returnByteArray[dataBytes.Length] = new VariableByte((byte)this.length, 8);
-
-            return returnByteArray;
-        }
-
-        public byte[] ToFullByteArray()
-        {
-            var dataBytes = data.ToFullByteArray();
 
             var returnByteArray = new byte[dataBytes.Length + 1];
 

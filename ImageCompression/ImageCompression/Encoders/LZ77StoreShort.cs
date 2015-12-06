@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImageCompression.ExtensionMethods;
 
 namespace ImageCompression.Encoders
 {
@@ -11,10 +12,13 @@ namespace ImageCompression.Encoders
     {
         public T data { get; private set; }
 
+        public override byte[] bytePattern { get; }
+
         public LZ77StoreShort(T data)
         {
             this.data = data;
             this.shortForm = true;
+            this.bytePattern = ((byte)1).Merge(this.data.bytePattern);
         }
 
         public override string ToString()
@@ -43,21 +47,9 @@ namespace ImageCompression.Encoders
             return base.GetHashCode();
         }
 
-        public override VariableByte[] ToByteArray()
+        public override byte[] ToByteArray()
         {
             var dataBytes = data.ToByteArray();
-
-            var returnByteArray = new VariableByte[dataBytes.Length + 1];
-
-            returnByteArray[0] = VariableByte.One;
-            dataBytes.CopyTo(returnByteArray, 1);
-
-            return returnByteArray;
-        }
-
-        public override byte[] ToFullByteArray()
-        {
-            var dataBytes = data.ToFullByteArray();
 
             var returnByteArray = new byte[dataBytes.Length + 1];
 

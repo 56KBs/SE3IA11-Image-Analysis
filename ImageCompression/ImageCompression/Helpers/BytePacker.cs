@@ -41,21 +41,32 @@ namespace ImageCompression.Helpers
             Eight = 0x00
         }
 
-        public static byte[] Pack(List<VariableByte[]> variableBytes)
+        public static byte[] Pack(List<Interfaces.IEncodable> encodableList)
         {
             var byteList = new List<byte>();
             byteList.Add(0); // Add empty value for doing operations on
 
             var byteListIndex = 0;
             var byteBitsRemaining = 8;
+            var byteLengthPatternIndex = 0;
 
-            foreach (VariableByte[] byteArray in variableBytes)
+            foreach (Interfaces.IEncodable encodableData in encodableList)
             {
-                foreach (VariableByte byteValue in byteArray)
-                {
-                    var byteValueLength = byteValue.bitLength;
+                var byteLengthPatternCount = encodableData.bytePattern.Length;
 
-                    PackVariableByte(ref byteList, ref byteListIndex, ref byteBitsRemaining, byteValue);
+                var byteData = encodableData.ToByteArray();
+                foreach (byte byteValue in byteData)
+                {
+                    PackVariableByte(ref byteList, ref byteListIndex, ref byteBitsRemaining, byteValue, encodableData.bytePattern[byteLengthPatternIndex]);
+
+                    if (byteLengthPatternIndex == byteLengthPatternCount - 1)
+                    {
+                        byteLengthPatternIndex = 0;
+                    }
+                    else
+                    {
+                        byteLengthPatternIndex++;
+                    }
                 }
             }
 
@@ -76,14 +87,12 @@ namespace ImageCompression.Helpers
             return byteList.ToArray();
         }
 
-        private static void PackVariableByte(ref List<byte> byteList, ref int byteListIndex, ref int byteBitsRemaining, VariableByte variableByte)
+        private static void PackVariableByte(ref List<byte> byteList, ref int byteListIndex, ref int byteBitsRemaining, byte dataByte, byte byteLength)
         {
-            var variableByteLength = variableByte.bitLength;
-
             // Can merge in exactly, or with space to go
-            if (byteBitsRemaining >= variableByteLength)
+            if (byteBitsRemaining >= byteLength)
             {
-                byteList[byteListIndex] = byteList[byteListIndex].PushBits(variableByte.ToFullByte(), ref byteBitsRemaining, variableByteLength);
+                byteList[byteListIndex] = byteList[byteListIndex].PushBits(dataByte, ref byteBitsRemaining, byteLength);
                 
                 if (byteBitsRemaining == 0)
                 {
@@ -96,10 +105,10 @@ namespace ImageCompression.Helpers
             else
             {
                 // Get the bits that will fit
-                var partialByteStart = variableByte.ToFullByte().GetOffsetBits(8 - variableByteLength, byteBitsRemaining);
+                var partialByteStart = dataByte.GetOffsetBits(8 - byteLength, byteBitsRemaining);
                 //var partialByteStart = (byte)(variableByte.ToFullByte() >> byteBitsRemaining);
 
-                var remainingBits = variableByteLength - byteBitsRemaining;
+                var remainingBits = byteLength - byteBitsRemaining;
 
                 // Push the byte in
                 byteList[byteListIndex] = byteList[byteListIndex].PushBits(partialByteStart, ref byteBitsRemaining, byteBitsRemaining);
@@ -112,7 +121,7 @@ namespace ImageCompression.Helpers
                 }
 
                 // Get the bits that still remain
-                var partialByteEnd = variableByte.ToFullByte().GetLastBits(remainingBits);
+                var partialByteEnd = dataByte.GetLastBits(remainingBits);
 
                 // Push the byte in
                 byteList[byteListIndex] = byteList[byteListIndex].PushBits(partialByteEnd, ref byteBitsRemaining, remainingBits);
@@ -123,77 +132,6 @@ namespace ImageCompression.Helpers
                     byteBitsRemaining = 8;
                 }
             }
-        }
-
-        // This packing methodology works only if the type of data packed is known
-        public static byte[] Pack(List<VariableByte[]> variableBytes, int forcetobeanother)
-        {
-            var bytes = new List<byte>();
-            bytes.Add(0);
-
-            var currentPackingIndex = 0;
-            var currentPackingLengthRemaining = 8;
-
-            foreach (VariableByte[] variableByteArray in variableBytes)
-            {
-                for (var i = 0; i < variableByteArray.Length; i++)
-                {
-                    var variableByte = variableByteArray[i];
-
-                    var currentVariableByteLength = variableByte.bitLength;
-
-                    // Our variable byte fits perfectly!
-                    if (currentPackingLengthRemaining == currentVariableByteLength)
-                    {
-                        bytes[currentPackingIndex] = variableByte.ToFullByte();
-
-                        if (i < variableByteArray.Length - 1)
-                        {
-                            bytes.Add(0);
-                            currentPackingIndex++;
-                            currentPackingLengthRemaining = 8;
-                        }
-                    }
-                    // Variable byte fits with space to go, so fit it in
-                    else if (currentPackingLengthRemaining > currentVariableByteLength)
-                    {
-                        // Push our variable byte in via a bit shift and a bitwise XOR
-                        bytes[currentPackingIndex] = (byte)(bytes[currentPackingIndex] << currentVariableByteLength);
-                        bytes[currentPackingIndex] = (byte)(bytes[currentPackingIndex] ^ variableByte.ToFullByte());
-
-                        // Update the length of data left to pack
-                        currentPackingLengthRemaining -= currentVariableByteLength;
-                    }
-                    // Variable byte doesn't fit fully, so split it up
-                    else
-                    {
-                        // Mark how much data we can't fit in
-                        var currentVariableByteRemaining = currentVariableByteLength - currentPackingLengthRemaining;
-
-                        // Push in what we can of our variable byte via a bit shift and a bitwise XOR on the shifted data that can fit
-                        bytes[currentPackingIndex] = (byte)(bytes[currentPackingIndex] << currentPackingLengthRemaining);
-                        bytes[currentPackingIndex] = (byte)(bytes[currentPackingIndex] ^ (variableByte.ToFullByte() >> currentVariableByteRemaining));
-
-                        // Move our indexer along
-                        bytes.Add(0);
-                        currentPackingIndex++;
-                        // Reset the packing size remaining
-                        currentPackingLengthRemaining = 8;
-
-                        // Get the mask we need to get the end data
-                        var mask = (byte)(RearMasks)Enum.Parse(typeof(RearMasks), currentVariableByteRemaining.ToString());
-
-                        // Remaining variable byte will fit with space to go, so put it in
-                        bytes[currentPackingIndex] = (byte)(bytes[currentPackingIndex] << currentVariableByteRemaining);
-                        bytes[currentPackingIndex] = (byte)(bytes[currentPackingIndex] ^ (variableByte.ToFullByte() & mask));
-
-                        // Update the length of data left to pack
-                        currentPackingLengthRemaining -= currentVariableByteRemaining;
-                    }
-                }
-            }
-
-            return bytes.ToArray();
         }
     }
 }

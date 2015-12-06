@@ -15,7 +15,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void ConvertAll2D_Normal_Time()
         {
-            var conversion = NormalPixels.ConvertAll2D(new Converter<RGB, RGB>(x => new RGB(x.R.ToFullByte(), x.G.ToFullByte(), x.B.ToFullByte(), RGB.ColorDepth.TwentyFour)));
+            var conversion = NormalPixels.ConvertAll2D(new Converter<RGB, RGB>(x => new RGB(x.R, x.G, x.B, RGB.ColorDepth.TwentyFour)));
         }
     }
 }

@@ -8,10 +8,10 @@ namespace ImageCompression.Encoders
 {
     public abstract class LZ77Store : Interfaces.IEncodable
     {
+        public abstract byte[] bytePattern { get; }
+
         public bool shortForm { get; protected set; }
-
-        public abstract VariableByte[] ToByteArray();
-
-        public abstract byte[] ToFullByteArray();
+        
+        public abstract byte[] ToByteArray();
     }
 }

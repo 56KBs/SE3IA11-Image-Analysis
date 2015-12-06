@@ -50,8 +50,6 @@
     <Compile Include="ExtensionMethods\ByteExtensions.cs" />
     <Compile Include="ExtensionMethods\LinqExtensions.cs" />
     <Compile Include="Helpers\BytePacker.cs" />
-    <Compile Include="VariableByte.cs" />
-    <Compile Include="ColorModel\Component.cs" />
     <Compile Include="ColorModel\RGB.cs" />
     <Compile Include="Encoders\Huffman.cs" />
     <Compile Include="Encoders\ILZ77Store.cs" />
@@ -62,6 +60,7 @@
     <Compile Include="Encoders\RunLengthStore.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\BitmapExtensions.cs" />
+    <Compile Include="Helpers\BytePattern.cs" />
     <Compile Include="Helpers\Int.cs" />
     <Compile Include="Helpers\LimitedQueue.cs" />
     <Compile Include="Helpers\LimitedStack.cs" />

@@ -117,7 +117,7 @@ namespace ImageCompression.Encoders
 
             // Can the last item in the window match the first buffer item?
             //if (window[windowSize - 1].Equals(buffer[0]))
-            if (window[windowSize - 1].ToFullByteArray().SequenceEqual(buffer[0].ToFullByteArray()))
+            if (window[windowSize - 1].ToByteArray().SequenceEqual(buffer[0].ToByteArray()))
             {
                 // If this is true then the last item may repeatedly match along the buffer
                 currentMatchStart = windowSize - 1;
@@ -149,7 +149,7 @@ namespace ImageCompression.Encoders
             {
                 // If we have a starting match
                 //if (window[i].Equals(buffer[0]))
-                if (window[i].ToFullByteArray().SequenceEqual(buffer[0].ToFullByteArray()))
+                if (window[i].ToByteArray().SequenceEqual(buffer[0].ToByteArray()))
                 {
                     currentMatchStart = i;
                     currentMatch++;

@@ -68,5 +68,26 @@ namespace ImageCompression.ExtensionMethods
             // Return data
             return flatArray;
         }
+
+        public static T[] Merge<T>(this T[] first, T[] second)
+        {
+            T[] mergedArray = new T[first.Length + second.Length];
+
+            Array.Copy(first, mergedArray, 0);
+            Array.Copy(second, 0, mergedArray, first.Length, second.Length);
+
+            return mergedArray;
+        }
+        
+        public static T[] Merge<T>(this T first, T[] second)
+        {
+            T[] mergedArray = new T[1 + second.Length];
+
+            mergedArray[0] = first;
+
+            Array.Copy(second, 0, mergedArray, 1, second.Length);
+
+            return mergedArray;
+        }
     }
 }

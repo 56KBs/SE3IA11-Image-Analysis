@@ -9,9 +9,9 @@ namespace ImageCompression.Encoders
     public class Huffman<T>
         where T : Interfaces.IEncodable
     {
-        public Dictionary<T, VariableByte> symbolTable { get; private set; }
+        public Dictionary<T, byte> symbolTable { get; private set; }
 
-        public List<VariableByte> dataList { get; private set; }
+        public List<byte> dataList { get; private set; }
 
         public static Huffman<T> Empty
         {
@@ -23,13 +23,13 @@ namespace ImageCompression.Encoders
             // Creates empty huffman list
         }
 
-        public Huffman(Dictionary<T, VariableByte> symbolTable, List<VariableByte> dataList)
+        public Huffman(Dictionary<T, byte> symbolTable, List<byte> dataList)
         {
             this.symbolTable = symbolTable;
             this.dataList = dataList;
         }
 
-        public Huffman(Dictionary<T, VariableByte> symbolTable, List<T> dataList)
+        public Huffman(Dictionary<T, byte> symbolTable, List<T> dataList)
         {
             this.symbolTable = symbolTable;
             this.AddData(dataList);
@@ -37,17 +37,17 @@ namespace ImageCompression.Encoders
 
         public void AddSymbolTable(List<HuffmanNode<T>> nodeList)
         {
-            symbolTable = new Dictionary<T, VariableByte>();
+            symbolTable = new Dictionary<T, byte>();
 
             foreach (HuffmanNode<T> node in nodeList)
             {
-                symbolTable.Add(node.data, node.SymbolAsVariableByte());
+                symbolTable.Add(node.data, node.SymbolAsByte());
             }
         }
 
         public void AddData(List<T> rawData)
         {
-            dataList = new List<VariableByte>();
+            dataList = new List<byte>();
 
             foreach (T dataItem in rawData)
             {

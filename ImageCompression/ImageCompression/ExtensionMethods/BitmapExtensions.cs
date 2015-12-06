@@ -17,6 +17,8 @@ namespace ImageCompression.ExtensionMethods
             var bitmapWidth = bitmap.Width;
             var pixelFormat = bitmap.PixelFormat;
 
+            // NEED TO CALCULATE BYTES PER PIXEL AS SOME FORMATS HALF ALPHA CHANNEL!
+
             // Make a new colour array
             var colorData = new ColorModel.RGB[bitmapWidth, bitmapHeight];         
 
@@ -34,11 +36,17 @@ namespace ImageCompression.ExtensionMethods
                 // Optimised processing of data
                 Parallel.For(0, bitmapHeight, j =>
                 {
-                    var offsetDataPointer = dataPointer + (j * bitmapWidth);
+                    // Use the stride to take the padding into account at the end of rows
+                    var offsetDataPointer = dataPointer + (j * bitmapData.Stride);
 
                     for (var i = 0; i < bitmapWidth; i++)
                     {
-                        colorData[i, j] = new ColorModel.RGB(*(offsetDataPointer + 16), *(offsetDataPointer + 8), *offsetDataPointer, ColorModel.RGB.ColorDepth.TwentyFour);
+                        if (*offsetDataPointer == 255 || *(offsetDataPointer + 1) == 255 || *(offsetDataPointer + 2) == 255)
+                        {
+                            var debuggerplz = 0;
+                        }
+
+                        colorData[i, j] = new ColorModel.RGB(*(offsetDataPointer + 2), *(offsetDataPointer + 1), *offsetDataPointer, ColorModel.RGB.ColorDepth.TwentyFour);
 
                         offsetDataPointer += 3;
                     }

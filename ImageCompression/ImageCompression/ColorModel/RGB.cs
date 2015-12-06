@@ -26,50 +26,75 @@ namespace ImageCompression.ColorModel
             B
         };
 
-        public VariableByte R { get; set; }
+        public byte R { get; set; }
 
-        public VariableByte G { get; set; }
+        public byte G { get; set; }
 
-        public VariableByte B { get; set; }
+        public byte B { get; set; }
 
         public ColorDepth bits { get; private set; }
 
+        public byte[] bytePattern { get; }
+
         public RGB(byte R, byte G, byte B, ColorDepth bitDepth)
         {
-            this.R = this.MakeVariableByte(Channels.R, bitDepth, R);
-            this.G = this.MakeVariableByte(Channels.G, bitDepth, G);
-            this.B = this.MakeVariableByte(Channels.B, bitDepth, B);
+            this.R = this.MakeByte(Channels.R, bitDepth, R);
+            this.G = this.MakeByte(Channels.G, bitDepth, G);
+            this.B = this.MakeByte(Channels.B, bitDepth, B);
 
             this.bits = bitDepth;
+            this.bytePattern = Helpers.BytePattern.GenerateArrayFromDepth(bitDepth);
         }
 
-        public RGB(Component R, Component G, Component B, ColorDepth bitDepth)
+        public RGB(byte R, int originalRLength, byte G, int originalGLength, byte B, int originalBLength, ColorDepth bitDepth)
         {
-            this.R = this.MakeVariableByte(Channels.R, bitDepth, R.ToFullByte());
-            this.G = this.MakeVariableByte(Channels.G, bitDepth, G.ToFullByte());
-            this.B = this.MakeVariableByte(Channels.B, bitDepth, B.ToFullByte());
+            this.R = this.MakeByte(Channels.R, bitDepth, R, originalRLength);
+            this.G = this.MakeByte(Channels.G, bitDepth, G, originalGLength);
+            this.B = this.MakeByte(Channels.B, bitDepth, B, originalBLength);
 
             this.bits = bitDepth;
+            this.bytePattern = Helpers.BytePattern.GenerateArrayFromDepth(bitDepth);
         }
 
-        private VariableByte MakeVariableByte(Channels channel, ColorDepth bitDepth, byte value)
+        private byte MakeByte(Channels channel, ColorDepth bitDepth, byte value, int originalLength)
         {
             if (bitDepth == ColorDepth.Eight)
             {
                 if (channel == Channels.B)
                 {
-                    return new VariableByte(value, 8,  2);
+                    return value.ConvertBitLength(originalLength, 2);
                 }
                 else
                 {
-                    return new VariableByte(value, 8, 3);
+                    return value.ConvertBitLength(originalLength, 3);
                 }
             }
             else
             {
                 var componentBits = (int)bitDepth / 3;
 
-                return new VariableByte(value, 8, componentBits);
+                return value.ConvertBitLength(originalLength, componentBits);
+            }
+        }
+
+        private byte MakeByte(Channels channel, ColorDepth bitDepth, byte value)
+        {
+            if (bitDepth == ColorDepth.Eight)
+            {
+                if (channel == Channels.B)
+                {
+                    return value.ConvertBitLength(8, 2);
+                }
+                else
+                {
+                    return value.ConvertBitLength(8, 3);
+                }
+            }
+            else
+            {
+                var componentBits = (int)bitDepth / 3;
+
+                return value.ConvertBitLength(8, componentBits);
             }
         }
 
@@ -81,16 +106,16 @@ namespace ImageCompression.ColorModel
             }
             else
             {
-                return new RGB(this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte(), bitDepth);
+                return new RGB(this.R, this.G, this.B, bitDepth);
             }
         }
 
         public Color ToColor()
         {
-            return Color.FromArgb(0, this.R.ToFullByte(), this.G.ToFullByte(), this.B.ToFullByte());
+            return Color.FromArgb(0, this.R, this.G, this.B);
         }
 
-        public VariableByte SelectChannel(Channels channel)
+        public byte SelectChannel(Channels channel)
         {
             switch (channel)
             {
@@ -128,14 +153,9 @@ namespace ImageCompression.ColorModel
             //return String.Concat(R, ",", G, ",", B);
         }
 
-        public VariableByte[] ToByteArray()
+        public byte[] ToByteArray()
         {
-            return new VariableByte[] { R, G, B };
-        }
-
-        public byte[] ToFullByteArray()
-        {
-            return new byte[] { R.ToFullByte(), G.ToFullByte(), B.ToFullByte() };
+            return new byte[] { R, G, B };
         }
 
         public override bool Equals(object obj)
@@ -151,7 +171,7 @@ namespace ImageCompression.ColorModel
                 return false;
             }
 
-            return (this.R.ToFullByte() == rgb.R.ToFullByte()) && (this.G.ToFullByte() == rgb.G.ToFullByte()) && (this.B.ToFullByte() == rgb.B.ToFullByte());
+            return (this.R == rgb.R) && (this.G == rgb.G) && (this.B == rgb.B);
         }
 
         public static bool operator ==(RGB lhs, RGB rhs)
@@ -176,7 +196,7 @@ namespace ImageCompression.ColorModel
 
         public override int GetHashCode()
         {
-            return this.R.ToFullByte() ^ this.G.ToFullByte() ^ this.B.ToFullByte();
+            return this.R ^ this.G ^ this.B;
         }
     }
 }

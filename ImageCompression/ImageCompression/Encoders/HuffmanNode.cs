@@ -70,7 +70,7 @@ namespace ImageCompression.Encoders
             this.right = node;
         }
 
-        public VariableByte SymbolAsVariableByte()
+        public byte SymbolAsByte()
         {
             var length = this.symbol.Length;
 
@@ -81,7 +81,7 @@ namespace ImageCompression.Encoders
                 dataByte = dataByte.PushBit(Convert.ToBoolean(Char.GetNumericValue(symbol[i])));
             }
 
-            return new VariableByte(dataByte, length);
+            return dataByte;
         }
 
         public static HuffmanNode<T> JoinNodes(HuffmanNode<T> leftNode, HuffmanNode<T> rightNode)

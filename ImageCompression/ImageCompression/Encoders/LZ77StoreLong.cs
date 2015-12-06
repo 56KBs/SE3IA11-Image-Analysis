@@ -13,11 +13,14 @@ namespace ImageCompression.Encoders
 
         public int length { get; private set; }
 
+        public override byte[] bytePattern { get; }
+
         public LZ77StoreLong(int position, int length)
         {
             this.shortForm = false;
             this.position = position;
             this.length = length;
+            this.bytePattern = new byte[] { 1, 8, 8 };
         }
 
         public override string ToString()
@@ -46,22 +49,11 @@ namespace ImageCompression.Encoders
             return base.GetHashCode();
         }
 
-        public override VariableByte[] ToByteArray()
-        {
-            var returnByteArray = new VariableByte[3];
-
-            returnByteArray[0] = VariableByte.Zero;
-            returnByteArray[1] = new VariableByte((byte)this.position, 8);
-            returnByteArray[2] = new VariableByte((byte)this.length, 8);
-
-            return returnByteArray;
-        }
-
-        public override byte[] ToFullByteArray()
+        public override byte[] ToByteArray()
         {
             var returnByteArray = new byte[3];
 
-            returnByteArray[0] = 0x00;
+            returnByteArray[0] = 0;
             returnByteArray[1] = (byte)this.position;
             returnByteArray[2] = (byte)this.length;
 

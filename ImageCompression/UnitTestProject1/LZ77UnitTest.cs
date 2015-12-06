@@ -230,5 +230,14 @@ namespace UnitTestProject1
 
             CollectionAssert.AreEqual(expectedArray, encoded);
         }
+
+        [TestMethod]
+        public void LZ77_Update_Test()
+        {
+            var originalImage = new ImageCompression.StandardImage(new System.Drawing.Bitmap(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\kinect-dinosaur_uncompressed.png"));
+            var compressedData = RunLength.Encode(originalImage.GetPixelMatrix(ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour));
+
+            
+        }
     }
 }

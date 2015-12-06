@@ -15,7 +15,7 @@ namespace ImageCompressionUnitTests
         [TestMethod]
         public void RunLength_Encoding_Linq()
         {
-            var dataList = new List<Component> { new Component(23), new Component(43), new Component(12), new Component(234), new Component(234), new Component(84), new Component(84), new Component(84) };
+            var dataList = new List<byte> { 23, 43, 12, 234, 234, 84, 84, 84 };
 
             var runLenghted = dataList.GroupRuns(i => i);
         }

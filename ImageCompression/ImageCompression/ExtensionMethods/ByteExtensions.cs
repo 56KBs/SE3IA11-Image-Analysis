@@ -10,6 +10,25 @@ namespace ImageCompression.ExtensionMethods
 {
     public static class ByteExtensions
     {
+        public static byte ConvertBitLength(this byte b, int originalBits, int newBits)
+        {
+            if (originalBits == newBits)
+            {
+                return b;
+            }
+            else
+            {
+                if (originalBits < newBits)
+                {
+                    return (byte)(b << (newBits - originalBits));
+                }
+                else
+                {
+                    return (byte)(b >> (originalBits - newBits));
+                }
+            }
+        }
+
         public static byte GetFirstBits(this byte b, int count)
         {
             switch (count)

@@ -12,6 +12,7 @@ using System.IO;
 using ImageCompression.Encoders;
 using ImageCompression.ColorModel;
 using ImageCompression.ExtensionMethods;
+using ImageCompression.Helpers;
 
 namespace ImageCompressionGUI
 {
@@ -224,11 +225,8 @@ namespace ImageCompressionGUI
                 data = encodedData.ToList<ImageCompression.Interfaces.IEncodable>();
             }
 
-            // Make into variableByte array
-            var byteArray = data.ConvertAll(new Converter<ImageCompression.Interfaces.IEncodable, VariableByte[]>(x => x.ToByteArray()));
-
             // Pack the bytes
-            this.compressedForm = ImageCompression.Helpers.BytePacker.Pack(byteArray);
+            this.compressedForm = ImageCompression.Helpers.BytePacker.Pack(data);
 
             // Update compressed size
             this.compressedSizeLabelBytes.Text = (this.compressedForm.Length + this.compressionFlags).ToString();
