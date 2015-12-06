@@ -270,14 +270,14 @@
             this.originalSizeLabel.Location = new System.Drawing.Point(5, 5);
             this.originalSizeLabel.Margin = new System.Windows.Forms.Padding(5, 5, 3, 0);
             this.originalSizeLabel.Name = "originalSizeLabel";
-            this.originalSizeLabel.Size = new System.Drawing.Size(102, 13);
+            this.originalSizeLabel.Size = new System.Drawing.Size(68, 13);
             this.originalSizeLabel.TabIndex = 0;
-            this.originalSizeLabel.Text = "Original Size (bytes):";
+            this.originalSizeLabel.Text = "Original Size:";
             // 
             // originalSizeLabelBytes
             // 
             this.originalSizeLabelBytes.AutoSize = true;
-            this.originalSizeLabelBytes.Location = new System.Drawing.Point(113, 5);
+            this.originalSizeLabelBytes.Location = new System.Drawing.Point(79, 5);
             this.originalSizeLabelBytes.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.originalSizeLabelBytes.Name = "originalSizeLabelBytes";
             this.originalSizeLabelBytes.Size = new System.Drawing.Size(13, 13);
@@ -287,17 +287,17 @@
             // compressedSizeLabel
             // 
             this.compressedSizeLabel.AutoSize = true;
-            this.compressedSizeLabel.Location = new System.Drawing.Point(139, 5);
+            this.compressedSizeLabel.Location = new System.Drawing.Point(105, 5);
             this.compressedSizeLabel.Margin = new System.Windows.Forms.Padding(10, 5, 3, 0);
             this.compressedSizeLabel.Name = "compressedSizeLabel";
-            this.compressedSizeLabel.Size = new System.Drawing.Size(125, 13);
+            this.compressedSizeLabel.Size = new System.Drawing.Size(91, 13);
             this.compressedSizeLabel.TabIndex = 1;
-            this.compressedSizeLabel.Text = "Compressed Size (bytes):";
+            this.compressedSizeLabel.Text = "Compressed Size:";
             // 
             // compressedSizeLabelBytes
             // 
             this.compressedSizeLabelBytes.AutoSize = true;
-            this.compressedSizeLabelBytes.Location = new System.Drawing.Point(270, 5);
+            this.compressedSizeLabelBytes.Location = new System.Drawing.Point(202, 5);
             this.compressedSizeLabelBytes.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.compressedSizeLabelBytes.Name = "compressedSizeLabelBytes";
             this.compressedSizeLabelBytes.Size = new System.Drawing.Size(13, 13);
@@ -307,7 +307,7 @@
             // compressionRatioLabel
             // 
             this.compressionRatioLabel.AutoSize = true;
-            this.compressionRatioLabel.Location = new System.Drawing.Point(296, 5);
+            this.compressionRatioLabel.Location = new System.Drawing.Point(228, 5);
             this.compressionRatioLabel.Margin = new System.Windows.Forms.Padding(10, 5, 3, 0);
             this.compressionRatioLabel.Name = "compressionRatioLabel";
             this.compressionRatioLabel.Size = new System.Drawing.Size(98, 13);
@@ -317,7 +317,7 @@
             // compressionRatio
             // 
             this.compressionRatio.AutoSize = true;
-            this.compressionRatio.Location = new System.Drawing.Point(400, 5);
+            this.compressionRatio.Location = new System.Drawing.Point(332, 5);
             this.compressionRatio.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.compressionRatio.Name = "compressionRatio";
             this.compressionRatio.Size = new System.Drawing.Size(27, 13);

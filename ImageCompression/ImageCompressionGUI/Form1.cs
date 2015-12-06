@@ -101,7 +101,7 @@ namespace ImageCompressionGUI
                 this.originalPictureBox.Image = this.originalImage.GetBitmap();
                 height = this.originalPictureBox.Height;
                 width = this.originalPictureBox.Width;
-                this.originalSizeLabelBytes.Text = new FileInfo(fileDialog.FileName).Length.ToString();
+                this.originalSizeLabelBytes.Text = (new FileInfo(fileDialog.FileName).Length / 1024) + " KB";
             }
         }
 
@@ -229,7 +229,7 @@ namespace ImageCompressionGUI
             this.compressedForm = ImageCompression.Helpers.BytePacker.Pack(data);
 
             // Update compressed size
-            this.compressedSizeLabelBytes.Text = (this.compressedForm.Length + this.compressionFlags).ToString();
+            this.compressedSizeLabelBytes.Text = ((this.compressedForm.Length + this.compressionFlags) / 1024) + " KB";
 
             // Update compression radio
             this.compressionRatio.Text = this.CalculateCompressionRatio(int.Parse(this.originalSizeLabelBytes.Text), int.Parse(this.compressedSizeLabelBytes.Text));
