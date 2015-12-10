@@ -72,7 +72,13 @@ namespace ImageCompression.Encoders
 
         public byte SymbolAsByte()
         {
+
             var length = this.symbol.Length;
+
+            if (length > 8)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
 
             var dataByte = (byte)0;
 

@@ -55,6 +55,11 @@ namespace ImageCompression.Encoders
             }
         }
 
+        public static Huffman<T> Encode(T[] rawData)
+        {
+            return Huffman<T>.Encode(rawData.ToList());
+        }
+
         public static Huffman<T> Encode(List<T> rawData)
         {
             var returnHuffmanData = Huffman<T>.Empty;
@@ -101,6 +106,7 @@ namespace ImageCompression.Encoders
 
             // Find the longest symbol size
 
+            var groupedDataToDoubleCheck = returnHuffmanData.symbolTable.GroupBy(s => s.Key);
             
             return returnHuffmanData;
         }

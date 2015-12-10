@@ -8,7 +8,7 @@ using ImageCompression.ExtensionMethods;
 
 namespace ImageCompression.ImageData
 {
-    class FourierMatrix<T> where T : ColorModel.RGB
+    public class FourierMatrix<T> where T : ColorModel.RGB
     {
         private List<Channel<Complex[,]>> data { get; set; }
 

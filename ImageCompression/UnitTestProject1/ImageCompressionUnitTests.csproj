@@ -60,6 +60,7 @@
     <Compile Include="HelpersIntUnitTests.cs" />
     <Compile Include="HuffmanUnitTests.cs" />
     <Compile Include="ArrayExtensionsUnitTests.cs" />
+    <Compile Include="FlagUnitTests.cs" />
     <Compile Include="VariableBytePackerUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -38,6 +38,7 @@
             this.encodingTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runLengthEncodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lZ77CompressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.huffmanEncodingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -45,8 +46,8 @@
             this.originalPictureBox = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.compressedImageTab = new System.Windows.Forms.TabPage();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.compressedPictureBox = new System.Windows.Forms.PictureBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.originalSizeLabel = new System.Windows.Forms.Label();
             this.originalSizeLabelBytes = new System.Windows.Forms.Label();
@@ -54,13 +55,14 @@
             this.compressedSizeLabelBytes = new System.Windows.Forms.Label();
             this.compressionRatioLabel = new System.Windows.Forms.Label();
             this.compressionRatio = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.meanSquaredError = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.originalImageTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.originalPictureBox)).BeginInit();
             this.compressedImageTab.SuspendLayout();
-            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.compressedPictureBox)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -133,7 +135,8 @@
             // 
             this.encodingTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.runLengthEncodingToolStripMenuItem,
-            this.lZ77CompressionToolStripMenuItem});
+            this.lZ77CompressionToolStripMenuItem,
+            this.huffmanEncodingToolStripMenuItem});
             this.encodingTypeToolStripMenuItem.Name = "encodingTypeToolStripMenuItem";
             this.encodingTypeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.encodingTypeToolStripMenuItem.Text = "Encoding Type";
@@ -151,6 +154,13 @@
             this.lZ77CompressionToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.lZ77CompressionToolStripMenuItem.Text = "LZ77 Compression";
             this.lZ77CompressionToolStripMenuItem.Click += new System.EventHandler(this.lZ77CompressionToolStripMenuItem_Click);
+            // 
+            // huffmanEncodingToolStripMenuItem
+            // 
+            this.huffmanEncodingToolStripMenuItem.Name = "huffmanEncodingToolStripMenuItem";
+            this.huffmanEncodingToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.huffmanEncodingToolStripMenuItem.Text = "Huffman Encoding";
+            this.huffmanEncodingToolStripMenuItem.Click += new System.EventHandler(this.huffmanEncodingToolStripMenuItem_Click);
             // 
             // recompressToolStripMenuItem
             // 
@@ -172,8 +182,8 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(693, 509);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(693, 546);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
             // tabControl1
@@ -186,7 +196,7 @@
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(687, 471);
+            this.tabControl1.Size = new System.Drawing.Size(687, 509);
             this.tabControl1.TabIndex = 2;
             // 
             // originalImageTab
@@ -222,33 +232,34 @@
             // 
             // compressedImageTab
             // 
+            this.compressedImageTab.Controls.Add(this.compressedPictureBox);
             this.compressedImageTab.Controls.Add(this.panel2);
             this.compressedImageTab.Location = new System.Drawing.Point(4, 22);
             this.compressedImageTab.Name = "compressedImageTab";
             this.compressedImageTab.Padding = new System.Windows.Forms.Padding(3);
-            this.compressedImageTab.Size = new System.Drawing.Size(679, 445);
+            this.compressedImageTab.Size = new System.Drawing.Size(679, 483);
             this.compressedImageTab.TabIndex = 1;
             this.compressedImageTab.Text = "Compressed Image";
             this.compressedImageTab.UseVisualStyleBackColor = true;
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.compressedPictureBox);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(3, 3);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(673, 439);
-            this.panel2.TabIndex = 0;
-            // 
             // compressedPictureBox
             // 
             this.compressedPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.compressedPictureBox.Location = new System.Drawing.Point(3, 3);
+            this.compressedPictureBox.Location = new System.Drawing.Point(6, 6);
             this.compressedPictureBox.Name = "compressedPictureBox";
             this.compressedPictureBox.Size = new System.Drawing.Size(100, 50);
             this.compressedPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.compressedPictureBox.TabIndex = 0;
             this.compressedPictureBox.TabStop = false;
+            // 
+            // panel2
+            // 
+            this.panel2.AutoScroll = true;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(673, 477);
+            this.panel2.TabIndex = 0;
             // 
             // flowLayoutPanel1
             // 
@@ -258,10 +269,12 @@
             this.flowLayoutPanel1.Controls.Add(this.compressedSizeLabelBytes);
             this.flowLayoutPanel1.Controls.Add(this.compressionRatioLabel);
             this.flowLayoutPanel1.Controls.Add(this.compressionRatio);
+            this.flowLayoutPanel1.Controls.Add(this.label1);
+            this.flowLayoutPanel1.Controls.Add(this.meanSquaredError);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 480);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 518);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(687, 26);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(687, 25);
             this.flowLayoutPanel1.TabIndex = 3;
             // 
             // originalSizeLabel
@@ -316,19 +329,37 @@
             // 
             // compressionRatio
             // 
-            this.compressionRatio.AutoSize = true;
             this.compressionRatio.Location = new System.Drawing.Point(332, 5);
             this.compressionRatio.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
             this.compressionRatio.Name = "compressionRatio";
-            this.compressionRatio.Size = new System.Drawing.Size(27, 13);
+            this.compressionRatio.Size = new System.Drawing.Size(172, 13);
             this.compressionRatio.TabIndex = 5;
             this.compressionRatio.Text = "N/A";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(517, 5);
+            this.label1.Margin = new System.Windows.Forms.Padding(10, 5, 3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(33, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "MSE:";
+            // 
+            // meanSquaredError
+            // 
+            this.meanSquaredError.Location = new System.Drawing.Point(556, 5);
+            this.meanSquaredError.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
+            this.meanSquaredError.Name = "meanSquaredError";
+            this.meanSquaredError.Size = new System.Drawing.Size(100, 13);
+            this.meanSquaredError.TabIndex = 7;
+            this.meanSquaredError.Text = "N/A";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(693, 548);
+            this.ClientSize = new System.Drawing.Size(693, 585);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -343,8 +374,7 @@
             this.originalImageTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.originalPictureBox)).EndInit();
             this.compressedImageTab.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.compressedImageTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.compressedPictureBox)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
@@ -381,6 +411,9 @@
         private System.Windows.Forms.Label originalSizeLabelBytes;
         private System.Windows.Forms.Label compressedSizeLabelBytes;
         private System.Windows.Forms.Label compressionRatio;
+        private System.Windows.Forms.ToolStripMenuItem huffmanEncodingToolStripMenuItem;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label meanSquaredError;
     }
 }
 

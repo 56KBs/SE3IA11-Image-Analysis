@@ -12,18 +12,35 @@ namespace ImageCompression.ExtensionMethods
     {
         public static ColorModel.RGB[,] GetRGBPixelArray(this Bitmap bitmap)
         {
+            Bitmap workingBitmap = null;
 
-            var bitmapHeight = bitmap.Height;
-            var bitmapWidth = bitmap.Width;
-            var pixelFormat = bitmap.PixelFormat;
+            // Convert 8bppIndexed into 24bppRGB
+            // http://stackoverflow.com/questions/2016406/converting-bitmap-pixelformats-in-c-sharp
+            if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
+            {
+                var newBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format24bppRgb);
+                using (Graphics gr = Graphics.FromImage(newBitmap))
+                {
+                    gr.DrawImage(bitmap, new Rectangle(0, 0, newBitmap.Width, newBitmap.Height));
+                }
 
-            // NEED TO CALCULATE BYTES PER PIXEL AS SOME FORMATS HALF ALPHA CHANNEL!
-            var bytesPerPixel = bitmap.BytesPerPixel();
+                workingBitmap = newBitmap;
+            }
+            else
+            {
+                workingBitmap = bitmap;
+            }
+
+            var bitmapHeight = workingBitmap.Height;
+            var bitmapWidth = workingBitmap.Width;
+            var pixelFormat = workingBitmap.PixelFormat;
+
+            var bytesPerPixel = workingBitmap.BytesPerPixel();
 
             // Make a new colour array
             var colorData = new ColorModel.RGB[bitmapWidth, bitmapHeight];         
 
-            BitmapData bitmapData = bitmap.LockBits(
+            BitmapData bitmapData = workingBitmap.LockBits(
                 new Rectangle(0, 0, bitmapWidth, bitmapHeight),
                 ImageLockMode.ReadOnly,
                 pixelFormat);
@@ -42,11 +59,6 @@ namespace ImageCompression.ExtensionMethods
 
                     for (var i = 0; i < bitmapWidth; i++)
                     {
-                        if (*offsetDataPointer == 255 || *(offsetDataPointer + 1) == 255 || *(offsetDataPointer + 2) == 255)
-                        {
-                            var debuggerplz = 0;
-                        }
-
                         colorData[i, j] = new ColorModel.RGB(*(offsetDataPointer + 2), *(offsetDataPointer + 1), *offsetDataPointer, ColorModel.RGB.ColorDepth.TwentyFour);
 
                         offsetDataPointer += bytesPerPixel;
@@ -54,7 +66,7 @@ namespace ImageCompression.ExtensionMethods
                 });
             }
 
-            bitmap.UnlockBits(bitmapData);
+            workingBitmap.UnlockBits(bitmapData);
 
             // Return the colour data
             return colorData;
@@ -82,7 +94,7 @@ namespace ImageCompression.ExtensionMethods
             }
             else if (bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
             {
-                return 8 /8;
+                return 8 / 8;
             }
             else
             {

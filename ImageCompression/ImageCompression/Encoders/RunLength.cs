@@ -9,7 +9,7 @@ namespace ImageCompression.Encoders
 {
     public static class RunLength
     {
-        public static List<Interfaces.IEncodable> Encode<T>(List<T> rawData) where T : ColorModel.RGB
+        public static List<Interfaces.IEncodable> Encode<T>(List<T> rawData) where T : Interfaces.IEncodable
         {
             var encodedData = new List<Interfaces.IEncodable>();
 
@@ -44,11 +44,18 @@ namespace ImageCompression.Encoders
             return encodedData;
         }
 
-        public static List<Interfaces.IEncodable> Encode<T>(T[,] rawData) where T : ColorModel.RGB
+        public static Interfaces.IEncodable[] Encode<T>(T[] rawData) where T : Interfaces.IEncodable
         {
             var rawDataAs1DList = rawData.Cast<T>().ToList();
 
-            return RunLength.Encode(rawDataAs1DList);
+            return RunLength.Encode(rawDataAs1DList).ToArray();
+        }
+
+        public static Interfaces.IEncodable[] Encode<T>(T[,] rawData) where T : Interfaces.IEncodable
+        {
+            var rawDataAs1DList = rawData.Cast<T>().ToList();
+
+            return RunLength.Encode(rawDataAs1DList).ToArray();
         }
 
         public static List<ColorModel.RGB> Decode(string encodedData)

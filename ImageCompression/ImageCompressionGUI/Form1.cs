@@ -20,6 +20,10 @@ namespace ImageCompressionGUI
     {
         private StandardImage originalImage { get; set; }
 
+        private ImageCompression.ImageData.PixelMatrix modifiedData { get; set; }
+
+        private StandardImage compressedImage { get; set; }
+
         private byte[] compressedForm { get; set; }
 
         private byte compressionFlags { get; set; }
@@ -35,6 +39,7 @@ namespace ImageCompressionGUI
         private void Form1_Load(object sender, EventArgs e)
         {
             this.originalImageTab.AutoScroll = true;
+            this.compressedImageTab.AutoScroll = true;
         }
 
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -58,6 +63,8 @@ namespace ImageCompressionGUI
                     binaryReader.Dispose();
 
                     this.originalImage = new StandardImage(new Bitmap(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\temp.bmp"));
+
+                    this.modifiedData = new ImageCompression.ImageData.PixelMatrix(this.originalImage.GetPixelMatrix(RGB.ColorDepth.TwentyFour));
                 }
                 else
                 {
@@ -102,6 +109,7 @@ namespace ImageCompressionGUI
                 height = this.originalPictureBox.Height;
                 width = this.originalPictureBox.Width;
                 this.originalSizeLabelBytes.Text = (new FileInfo(fileDialog.FileName).Length / 1024) + " KB";
+                this.modifiedData = this.modifiedData = new ImageCompression.ImageData.PixelMatrix(this.originalImage.GetPixelMatrix(RGB.ColorDepth.TwentyFour));
             }
         }
 
@@ -112,20 +120,21 @@ namespace ImageCompressionGUI
             // Default to RGB for now
             System.Type colorModel = typeof(ImageCompression.ColorModel.RGB);
 
-            switch (this.compressionFlags ^ ((byte)CompressionFlags.LZ77 | (byte)CompressionFlags.RunLength))
+            if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.EightBit))
             {
-                case (byte)CompressionFlags.EightBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eight;
-                    break;
-                case (byte)CompressionFlags.FifteenBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Fifteen;
-                    break;
-                case (byte)CompressionFlags.EighteenBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eighteen;
-                    break;
-                case (byte)CompressionFlags.TwentyFourBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour;
-                    break;
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eight;
+            }
+            else if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.FifteenBit))
+            {
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Fifteen;
+            }
+            else if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.EighteenBit))
+            {
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eighteen;
+            }
+            else if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.TwentyFourBit))
+            {
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour;
             }
 
             var decodedData = new List<ImageCompression.Interfaces.IEncodable>();
@@ -145,6 +154,10 @@ namespace ImageCompressionGUI
                 {
                     var fullDecodedLZ77 = LZ77.Decode<ImageCompression.ColorModel.RGB>(decodedLZ77).ToList();
 
+                    if (bitDepth != ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour)
+                    {
+                        fullDecodedLZ77 = fullDecodedLZ77.ConvertAll(new Converter<RGB, RGB>(x => x.ToDepth(RGB.ColorDepth.TwentyFour)));
+                    }
                     this.saveTempBitmap(fullDecodedLZ77, width, height);
                 }
             }
@@ -189,57 +202,81 @@ namespace ImageCompressionGUI
         {
             var bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour;
 
-            switch (this.compressionFlags ^ ((byte)CompressionFlags.LZ77 | (byte)CompressionFlags.RunLength))
+            if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.EightBit))
             {
-                case (byte)CompressionFlags.EightBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eight;
-                    break;
-                case (byte)CompressionFlags.FifteenBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Fifteen;
-                    break;
-                case (byte)CompressionFlags.EighteenBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eighteen;
-                    break;
-                case (byte)CompressionFlags.TwentyFourBit:
-                    bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour;
-                    break;
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eight;
+            }
+            else if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.FifteenBit))
+            {
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Fifteen;
+            }
+            else if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.EighteenBit))
+            {
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.Eighteen;
+            }
+            else if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.TwentyFourBit))
+            {
+                bitDepth = ImageCompression.ColorModel.RGB.ColorDepth.TwentyFour;
             }
 
-            var data = new List<ImageCompression.Interfaces.IEncodable>();
+            this.modifiedData.data = this.originalImage.GetPixelMatrix(bitDepth);
+            ImageCompression.Interfaces.IEncodable[] data = this.modifiedData.data.Flatten();
+            
+            // If huffman is enabled
+            if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.Huffman))
+            {
+                var huffmanData = Huffman<ImageCompression.Interfaces.IEncodable>.Encode(data);
+            }
 
             // If run length is enabled
-            if ((this.compressionFlags & (byte)CompressionFlags.RunLength) == (byte)CompressionFlags.RunLength)
+            if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.RunLength))
             {
-                data = RunLength.Encode(this.originalImage.GetPixelMatrix(bitDepth));
-            }
-            else
-            {
-                var flattenedData = this.originalImage.GetPixelMatrix(bitDepth).Flatten();
-                data = flattenedData.ToList<ImageCompression.Interfaces.IEncodable>();
+                data = RunLength.Encode<ImageCompression.Interfaces.IEncodable>(data);
             }
 
             // If LZ77 is enabled
-            if ((this.compressionFlags & (byte)CompressionFlags.LZ77) == (byte)CompressionFlags.LZ77)
+            if (this.compressionFlags.FlagIsSet((byte)CompressionFlags.LZ77))
             {
                 var encodedData = LZ77.Encode(data, 255, 255);
-                data = encodedData.ToList<ImageCompression.Interfaces.IEncodable>();
+                data = encodedData.ToArray<ImageCompression.Interfaces.IEncodable>();
             }
 
             // Pack the bytes
-            this.compressedForm = ImageCompression.Helpers.BytePacker.Pack(data);
+            this.compressedForm = ImageCompression.Helpers.BytePacker.Pack(data.ToList());
 
             // Update compressed size
             this.compressedSizeLabelBytes.Text = ((this.compressedForm.Length + this.compressionFlags) / 1024) + " KB";
 
             // Update compression radio
-            this.compressionRatio.Text = this.CalculateCompressionRatio(int.Parse(this.originalSizeLabelBytes.Text), int.Parse(this.compressedSizeLabelBytes.Text));
+            this.compressionRatio.Text = this.CalculateCompressionRatio(
+                int.Parse(this.originalSizeLabelBytes.Text.Substring(0, this.originalSizeLabelBytes.Text.Length - 3)),
+                int.Parse(this.compressedSizeLabelBytes.Text.Substring(0, this.originalSizeLabelBytes.Text.Length - 3)));
+
+            // Update MSE
+            this.meanSquaredError.Text = this.originalImage.MeanSqauredError(this.modifiedData.data).ToString();
+
+            // Update the preview tab with the preview data
+            if (this.compressedPictureBox.Image != null)
+            {
+                this.compressedPictureBox.Image.Dispose();
+                this.compressedImage.Dispose();
+            }
+
+            // Save the modified data as a temporary image
+            var modifiedBitmap = this.modifiedData.GetBitmap();
+
+            modifiedBitmap.Save(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\temp.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+            this.compressedImage = new StandardImage(new Bitmap(@"D:\GitHub\SE3IA11-Image-Analysis\ImageCompression\TestImage\Output\temp.bmp"));
+
+            this.compressedPictureBox.Image = this.compressedImage.GetBitmap();
         }
 
         private string CalculateCompressionRatio(int uncompressed, int compressed)
         {
             if (compressed == 0)
             {
-                return "N/A";
+                return "N /A";
             }
             else
             {
@@ -264,6 +301,15 @@ namespace ImageCompressionGUI
 
             // Add/remove flag if it isn't/is there
             this.compressionFlags = (byte)(this.compressionFlags ^ (byte)CompressionFlags.LZ77);
+        }
+
+        private void huffmanEncodingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Toggle the enabled/disabled
+            this.huffmanEncodingToolStripMenuItem.Checked = this.huffmanEncodingToolStripMenuItem.Checked ? false : true;
+
+            // Add/remove flag if it isn't/is there
+            this.compressionFlags = (byte)(this.compressionFlags ^ (byte)CompressionFlags.Huffman);
         }
 
         private void bitDepthComboBox_SelectionIndexChanged(object sender, EventArgs e)
@@ -309,5 +355,7 @@ namespace ImageCompressionGUI
                 }
             }
         }
+
+        
     }
 }

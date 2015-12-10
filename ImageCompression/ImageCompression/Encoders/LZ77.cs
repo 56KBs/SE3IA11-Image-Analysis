@@ -257,9 +257,9 @@ namespace ImageCompression.Encoders
                     {
                         dataList.Add(new LZ77StoreShort<ColorModel.RGB>(
                             new ColorModel.RGB(
-                                bitReader.ReadSmallBits(3),
-                                bitReader.ReadSmallBits(3),
-                                bitReader.ReadSmallBits(2),
+                                bitReader.ReadSmallBits(3), 3,
+                                bitReader.ReadSmallBits(3), 3,
+                                bitReader.ReadSmallBits(2), 2,
                                 colorDepth
                             )
                         ));
@@ -268,9 +268,9 @@ namespace ImageCompression.Encoders
                     {
                         dataList.Add(new LZ77StoreShort<ColorModel.RGB>(
                             new ColorModel.RGB(
-                                bitReader.ReadSmallBits(colorBitLength),
-                                bitReader.ReadSmallBits(colorBitLength),
-                                bitReader.ReadSmallBits(colorBitLength),
+                                bitReader.ReadSmallBits(colorBitLength), colorBitLength,
+                                bitReader.ReadSmallBits(colorBitLength), colorBitLength,
+                                bitReader.ReadSmallBits(colorBitLength), colorBitLength,
                                 colorDepth
                             )
                         ));

@@ -106,7 +106,23 @@ namespace ImageCompression.ColorModel
             }
             else
             {
-                return new RGB(this.R, this.G, this.B, bitDepth);
+                if ((byte)this.bits < (byte)bitDepth)
+                {
+                    if (this.bits == ColorDepth.Eight)
+                    {
+                        return new RGB(this.R.Upsample(3), this.G.Upsample(3), this.B.Upsample(2), bitDepth);
+                    }
+                    else
+                    {
+                        var componentBits = (int)this.bits / 3;
+
+                        return new RGB(this.R.Upsample(componentBits), this.G.Upsample(componentBits), this.B.Upsample(componentBits), bitDepth);
+                    }
+                }
+                else
+                {
+                    return new RGB(this.R, this.G, this.B, bitDepth);
+                }
             }
         }
 

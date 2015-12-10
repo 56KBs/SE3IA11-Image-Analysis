@@ -168,5 +168,22 @@ namespace ImageCompression.ExtensionMethods
             // Pad the byte so the data is shifted correctly for reading
             return (byte)(b << byteBitsRemaining);
         }
+
+        public static bool FlagIsSet(this byte b, byte flag)
+        {
+            return (b & flag) == flag;
+        }
+
+        public static byte Upsample(this byte b, int originalBitLength)
+        {
+            if (originalBitLength == 8)
+            {
+                return b;
+            }
+            else
+            {
+                return (byte)(b << (8 - originalBitLength));
+            }
+        }
     }
 }

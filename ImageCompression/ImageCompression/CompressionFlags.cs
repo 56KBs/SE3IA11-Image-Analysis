@@ -9,11 +9,12 @@ namespace ImageCompression
     [Flags]
     public enum CompressionFlags
     {
-        EightBit = 0x01,
-        FifteenBit = 0x03,
-        EighteenBit = 0x07,
-        TwentyFourBit = 0x0F,
-        RunLength = 0x10,
-        LZ77 = 0x20
+        EightBit = 1,
+        FifteenBit = 2,
+        EighteenBit = 4,
+        TwentyFourBit = 16,
+        RunLength = 32,
+        LZ77 = 64,
+        Huffman = 128
     }
 }
