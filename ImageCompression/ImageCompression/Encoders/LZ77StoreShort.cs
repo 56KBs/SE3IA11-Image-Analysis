@@ -10,12 +10,16 @@ namespace ImageCompression.Encoders
     public class LZ77StoreShort<T> : LZ77Store
         where T : Interfaces.IEncodable
     {
+        /// <summary>
+        /// The data being stored
+        /// </summary>
         public T data { get; private set; }
 
         public override byte[] bytePattern { get; }
 
         public LZ77StoreShort(T data)
         {
+            // Set everything up
             this.data = data;
             this.shortForm = true;
             this.bytePattern = ((byte)1).Merge(this.data.bytePattern);
@@ -28,6 +32,7 @@ namespace ImageCompression.Encoders
 
         public override bool Equals(object obj)
         {
+            // Override equals for equality checks
             if (obj == null)
             {
                 return false;
@@ -47,6 +52,10 @@ namespace ImageCompression.Encoders
             return base.GetHashCode();
         }
 
+        /// <summary>
+        /// Return the object as a byte array
+        /// </summary>
+        /// <returns>byte array of object</returns>
         public override byte[] ToByteArray()
         {
             var dataBytes = data.ToByteArray();

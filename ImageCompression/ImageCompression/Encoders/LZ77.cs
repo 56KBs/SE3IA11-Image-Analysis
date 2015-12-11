@@ -11,29 +11,45 @@ namespace ImageCompression.Encoders
 {
     public class LZ77
     {
-        public static List<LZ77Store> Encode<T>(List<T> data, int windowSize, int lookaheadSize)
-            where T : Interfaces.IEncodable
-        {
-            return LZ77.Encode(data.ToArray(), windowSize, lookaheadSize).ToList();
-        }
-
+        /// <summary>
+        /// Add an item(s) to the LZ77 queue
+        /// </summary>
+        /// <typeparam name="T">Type of the data being addeded</typeparam>
+        /// <param name="data">Data to take the data from</param>
+        /// <param name="queue">Queue of data to add to</param>
+        /// <param name="startPosition">Position to start adding from</param>
+        /// <param name="count">Count of items to copy</param>
+        /// <returns>Ending position</returns>
         private static int AddQueueItems<T>(ref T[] data, ref LimitedQueue<T> queue, int startPosition, int count)
         {
+            // Create a copy of the start position
             var endPosition = startPosition;
 
+            // Iterate over it, adding the data items required
             for (var i = 0; i < count; i++, endPosition++)
             {
                 queue.Enqueue(data[startPosition + i]);
             }
 
+            // Return the end position
             return endPosition;
         }
 
+        /// <summary>
+        /// Encoda via LZ77
+        /// </summary>
+        /// <typeparam name="T">Data type, interfaces IEncodable</typeparam>
+        /// <param name="data">Data to encode</param>
+        /// <param name="windowSize">Size of the past data window</param>
+        /// <param name="lookaheadSize">Size of the lookahead window</param>
+        /// <returns>LZ77 store array</returns>
         public static LZ77Store[] Encode<T>(T[] data, int windowSize, int lookaheadSize)
             where T : Interfaces.IEncodable
         {
+            // Create the output list
             var outputList = new List<LZ77Store>();
 
+            // Set up the lookahead and past windows
             var window = new Helpers.LimitedQueue<T>(windowSize);
             var lookahead = new Helpers.LimitedQueue<T>(lookaheadSize);
 
@@ -45,22 +61,29 @@ namespace ImageCompression.Encoders
             // Nothing in the window, so just output the first item as-is
             outputList.Add(new LZ77StoreShort<T>(data[position]));
 
+            // Advance the positions
             position++;
             lookaheadEnd++;
 
+            // Add the first data item
             windowEnd = LZ77.AddQueueItems(ref data, ref window, windowEnd, 1);
 
+            // If the lookahead size is larger than our data, create a lookahead queue the size of our data
             if (lookahead.size > data.Length)
             {
                 lookahead = new Helpers.LimitedQueue<T>(data.Length - 1);
             }
 
+            // Fill the lookahead queue
             lookaheadEnd = LZ77.AddQueueItems(ref data, ref lookahead, lookaheadEnd, lookahead.size);
 
+            // Loop over the data
             while (position < data.Length)
             {
                 var relativeMatchPosition = 0;
+                // Calculate a match
                 var matchLength = LZ77.LongestMatch(window.ToArray(), lookahead.ToArray(), out relativeMatchPosition);
+                // Calculate the position of the match relative to the window
                 var matchPosition = window.Count - relativeMatchPosition;
 
                 var incrementBy = 1;
@@ -68,11 +91,13 @@ namespace ImageCompression.Encoders
                 // Long store needed
                 if (matchLength != 0)
                 {
+                    // Add a long store
                     outputList.Add(new LZ77StoreLong<T>(matchPosition, matchLength));
                     incrementBy = matchLength;
                 }
                 else
                 {
+                    // Add a small store
                     outputList.Add(new LZ77StoreShort<T>(data[position]));
                 }
 
@@ -103,9 +128,18 @@ namespace ImageCompression.Encoders
             return outputList.ToArray();
         }
 
+        /// <summary>
+        /// Calculate the longest match in the data
+        /// </summary>
+        /// <typeparam name="T">Type of data, must be IEncodable</typeparam>
+        /// <param name="window">Past data window to look over</param>
+        /// <param name="buffer">The buffer of the data set</param>
+        /// <param name="longestMatchStart">Output the containst the position of the longest match</param>
+        /// <returns>The length of the match</returns>
         public static int LongestMatch<T>(T[] window, T[] buffer, out int longestMatchStart)
             where T : Interfaces.IEncodable
         {
+            // Get buffer sizes
             var windowSize = window.Length;
             var bufferSize = buffer.Length;
 
@@ -114,10 +148,9 @@ namespace ImageCompression.Encoders
 
             var currentMatchStart = 0;
             var currentMatch = 0;
-
-            // Can the last item in the window match the first buffer item?
+            
+            // If the last item matches the buffer, calculate the length of a repeated match, if possible
             if (window[windowSize - 1].Equals(buffer[0]))
-            //if (window[windowSize - 1].ToByteArray().SequenceEqual(buffer[0].ToByteArray()))
             {
                 // If this is true then the last item may repeatedly match along the buffer
                 currentMatchStart = windowSize - 1;
@@ -125,6 +158,7 @@ namespace ImageCompression.Encoders
 
                 var i = 0;
 
+                // Increment whilst there are matches
                 while (++i < bufferSize && window[currentMatchStart].Equals(buffer[i]))
                 {
                     currentMatch++;
@@ -149,7 +183,6 @@ namespace ImageCompression.Encoders
             {
                 // If we have a starting match
                 if (window[i].Equals(buffer[0]))
-                //if (window[i].ToByteArray().SequenceEqual(buffer[0].ToByteArray()))
                 {
                     currentMatchStart = i;
                     currentMatch++;
@@ -176,17 +209,26 @@ namespace ImageCompression.Encoders
                 }
             }
 
+            // Return the match
             return longestMatch;
         }
 
-
+        /// <summary>
+        /// Decode an array of LZ77Store
+        /// </summary>
+        /// <typeparam name="T">Type of the return data</typeparam>
+        /// <param name="encodedData">The encoded data</param>
+        /// <returns>An array of type T, containing the decoded data</returns>
         public static T[] Decode<T>(LZ77Store[] encodedData)
             where T : Interfaces.IEncodable
         {
+            // Set up the return list
             var decodedData = new List<T>();
 
+            // Loop over all the data
             for (var i = 0; i < encodedData.Length; i++)
             {
+                // If short form just copy the data from it as is
                 if (encodedData[i].shortForm)
                 {
                     var shortData = (LZ77StoreShort<T>)encodedData[i];
@@ -195,17 +237,23 @@ namespace ImageCompression.Encoders
                 }
                 else
                 {
+                    // If long form
+
+                    // Create a long data item from the current item
                     var longData = (LZ77StoreLong<T>)encodedData[i];
 
+                    // Calculate the current position
                     var currentPosition = decodedData.Count - longData.position;
 
                     var copyLength = longData.length;
-
+                    
+                    // Whilst we've got data to copy
                     while (copyLength > 0)
                     {
                         // We have to copy this multiple times
                         if (currentPosition == i - 1 && copyLength > 1)
                         {
+                            // Copy the data repeatedly until we have no more to copy
                             while (copyLength > 0)
                             {
                                 decodedData.Add(decodedData[currentPosition]);
@@ -215,6 +263,7 @@ namespace ImageCompression.Encoders
                         }
                         else
                         {
+                            // Copy the data item and increment counters
                             decodedData.Add(decodedData[currentPosition]);
                             currentPosition++;
                             copyLength--;
@@ -226,15 +275,27 @@ namespace ImageCompression.Encoders
             return decodedData.ToArray();
         }
 
+        /// <summary>
+        /// Calculates if the next data item is a long form
+        /// </summary>
+        /// <param name="bitReader">Reader of data</param>
+        /// <returns>Boolean result</returns>
         private static bool IsLongForm(ref BitReader bitReader)
         {
             return !bitReader.ReadBoolean();
         }
 
+        /// <summary>
+        /// Reads a binary stream into a LZ77 store
+        /// </summary>
+        /// <param name="binaryReader">Reference to the binary reader</param>
+        /// <param name="colorDepth">Colour depth the image is stored in</param>
+        /// <returns>LZ77Store array</returns>
         public static LZ77Store[] DecodeBinaryStream(ref BinaryReader binaryReader, ColorModel.RGB.ColorDepth colorDepth)
         {
             var dataList = new List<LZ77Store>();
 
+            // Create a bit reader from the base stream of the binaryreader
             var bitReader = new BitReader(binaryReader.BaseStream);
 
             // No packed data is the size of a byte, the remaining data will be picked up anyway
@@ -251,10 +312,12 @@ namespace ImageCompression.Encoders
                 // If is short form
                 else
                 {
+                    // Calculate length of bits
                     var colorBitLength = (int)colorDepth / 3;
 
                     if (colorDepth == ColorModel.RGB.ColorDepth.Eight)
                     {
+                        // Add the data item
                         dataList.Add(new LZ77StoreShort<ColorModel.RGB>(
                             new ColorModel.RGB(
                                 bitReader.ReadSmallBits(3), 3,
@@ -266,6 +329,7 @@ namespace ImageCompression.Encoders
                     }
                     else
                     {
+                        // Add the data item
                         dataList.Add(new LZ77StoreShort<ColorModel.RGB>(
                             new ColorModel.RGB(
                                 bitReader.ReadSmallBits(colorBitLength), colorBitLength,
@@ -279,60 +343,6 @@ namespace ImageCompression.Encoders
             }
 
             return dataList.ToArray();
-        }
- 
-        public static Helpers.BytePacker.FrontMasks GetFrontByteMask(int numberToMask)
-        {
-            switch (numberToMask)
-            {
-                case 0:
-                    return 0x00;
-                case 1:
-                    return Helpers.BytePacker.FrontMasks.One;
-                case 2:
-                    return Helpers.BytePacker.FrontMasks.Two;
-                case 3:
-                    return Helpers.BytePacker.FrontMasks.Three;
-                case 4:
-                    return Helpers.BytePacker.FrontMasks.Four;
-                case 5:
-                    return Helpers.BytePacker.FrontMasks.Five;
-                case 6:
-                    return Helpers.BytePacker.FrontMasks.Six;
-                case 7:
-                    return Helpers.BytePacker.FrontMasks.Seven;
-                case 8:
-                    return Helpers.BytePacker.FrontMasks.Eight;
-                default:
-                    throw new ArgumentOutOfRangeException("numberToMask");
-            }
-        }
-
-        public static Helpers.BytePacker.RearMasks GetRearByteMask(int numberToMask)
-        {
-            switch (numberToMask)
-            {
-                case 0:
-                    return 0x00;
-                case 1:
-                    return Helpers.BytePacker.RearMasks.One;
-                case 2:
-                    return Helpers.BytePacker.RearMasks.Two;
-                case 3:
-                    return Helpers.BytePacker.RearMasks.Three;
-                case 4:
-                    return Helpers.BytePacker.RearMasks.Four;
-                case 5:
-                    return Helpers.BytePacker.RearMasks.Five;
-                case 6:
-                    return Helpers.BytePacker.RearMasks.Six;
-                case 7:
-                    return Helpers.BytePacker.RearMasks.Seven;
-                case 8:
-                    return Helpers.BytePacker.RearMasks.Eight;
-                default:
-                    throw new ArgumentOutOfRangeException("numberToMask");
-            }
         }
     }
 }

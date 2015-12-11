@@ -68,19 +68,17 @@ namespace ImageCompression.ExtensionMethods
             // Return data
             return flatArray;
         }
-
-        public static T[] Merge<T>(this T[] first, T[] second)
-        {
-            T[] mergedArray = new T[first.Length + second.Length];
-
-            Array.Copy(first, mergedArray, 0);
-            Array.Copy(second, 0, mergedArray, first.Length, second.Length);
-
-            return mergedArray;
-        }
         
+        /// <summary>
+        /// Merge an array into a single item value
+        /// </summary>
+        /// <typeparam name="T">Type</typeparam>
+        /// <param name="first">Single T data item</param>
+        /// <param name="second">Array of T to append</param>
+        /// <returns>Array of type T</returns>
         public static T[] Merge<T>(this T first, T[] second)
         {
+            // Copy the array into an array with a single item longer in length
             T[] mergedArray = new T[1 + second.Length];
 
             mergedArray[0] = first;

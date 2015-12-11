@@ -12,6 +12,9 @@ namespace ImageCompression
 {
     public class BitReader : BinaryReader
     {
+        /// <summary>
+        /// Store the current bit index of the byte
+        /// </summary>
         private byte currentBitIndex { get; set; }
 
         public BitReader(Stream stream) : base(stream)
@@ -19,26 +22,35 @@ namespace ImageCompression
             this.currentBitIndex = 0;
         }
 
+        /// <summary>
+        /// Read a boolean value from the byte
+        /// </summary>
+        /// <returns>Boolean value</returns>
         public override bool ReadBoolean()
         {
+            // Read the bytes
             var readByte = base.ReadByte();
             var returnBoolean = false;
 
+            // If zero, return false
             if (readByte == 0)
             {
                 returnBoolean = false;
             }
             else
             {
+                // Get the single bit at a given index
                 returnBoolean = readByte.GetSingleBit(this.currentBitIndex);
             }
 
+            // If the current bit index is at the end of byte, reset it
             if (this.currentBitIndex == 7)
             {
                 this.currentBitIndex = 0;
             }
             else
             {
+                // Move the bit index on and move the position back
                 this.currentBitIndex++;
                 base.BaseStream.Position--;
             }
@@ -46,6 +58,11 @@ namespace ImageCompression
             return returnBoolean;
         }
 
+        /// <summary>
+        /// Read a small amount of data from the byte
+        /// </summary>
+        /// <param name="bitLength"></param>
+        /// <returns></returns>
         public byte ReadSmallBits(int bitLength)
         {
             if (bitLength > 8)
@@ -55,6 +72,7 @@ namespace ImageCompression
 
             var returnBit = (byte)0;
 
+            // Read boolean values and push the bits onto our return bit
             for (var i = 0; i < bitLength; i++)
             {
                 var bitValue = this.ReadBoolean();
@@ -64,26 +82,10 @@ namespace ImageCompression
             return returnBit;
         }
 
-        public byte[] ReadBits(int bitLength)
-        {
-            var returnBits = new byte[bitLength / 8];
-
-            var currentIndex = 0;
-            
-            for (var i = 0; i < bitLength; i++)
-            {
-                returnBits[currentIndex] = returnBits[currentIndex].PushBit(this.ReadBoolean());
-
-                // If at the end of a current bit, push the indexer on
-                if (i % 7 == 0 && i != 0)
-                {
-                    currentIndex++;
-                }
-            }
-
-            return returnBits;
-        }
-
+        /// <summary>
+        /// Read a full byte
+        /// </summary>
+        /// <returns>Byte</returns>
         public override byte ReadByte()
         {
             return this.ReadSmallBits(8);

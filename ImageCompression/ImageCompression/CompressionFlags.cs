@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ImageCompression
 {
+    /// <summary>
+    /// Flags used in the compressions
+    /// </summary>
     [Flags]
     public enum CompressionFlags
     {

@@ -31,15 +31,18 @@ namespace ImageCompression.ExtensionMethods
                 workingBitmap = bitmap;
             }
 
+            // Calculate information about the bitmap
             var bitmapHeight = workingBitmap.Height;
             var bitmapWidth = workingBitmap.Width;
             var pixelFormat = workingBitmap.PixelFormat;
 
+            // Get the bytes per pixel
             var bytesPerPixel = workingBitmap.BytesPerPixel();
 
             // Make a new colour array
             var colorData = new ColorModel.RGB[bitmapWidth, bitmapHeight];         
 
+            // Lock the data into memory
             BitmapData bitmapData = workingBitmap.LockBits(
                 new Rectangle(0, 0, bitmapWidth, bitmapHeight),
                 ImageLockMode.ReadOnly,
@@ -66,12 +69,18 @@ namespace ImageCompression.ExtensionMethods
                 });
             }
 
+            // Unlock the data
             workingBitmap.UnlockBits(bitmapData);
 
             // Return the colour data
             return colorData;
         }
 
+        /// <summary>
+        /// Calculate the number of bytes used per pixel in the bitmap
+        /// </summary>
+        /// <param name="bitmap">Bitmap to read from</param>
+        /// <returns>Byte containing the size of the data</returns>
         public static byte BytesPerPixel(this Bitmap bitmap)
         {
             if (bitmap.PixelFormat == PixelFormat.Canonical ||

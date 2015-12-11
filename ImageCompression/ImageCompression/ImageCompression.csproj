@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,7 +50,6 @@
     <Compile Include="CompressionFlags.cs" />
     <Compile Include="Encoders\HuffmanNode.cs" />
     <Compile Include="ExtensionMethods\ByteExtensions.cs" />
-    <Compile Include="ExtensionMethods\LinqExtensions.cs" />
     <Compile Include="Helpers\BytePacker.cs" />
     <Compile Include="ColorModel\RGB.cs" />
     <Compile Include="Encoders\Huffman.cs" />
@@ -63,15 +64,9 @@
     <Compile Include="Helpers\BytePattern.cs" />
     <Compile Include="Helpers\Int.cs" />
     <Compile Include="Helpers\LimitedQueue.cs" />
-    <Compile Include="Helpers\LimitedStack.cs" />
     <Compile Include="Interfaces\IEncodable.cs" />
     <Compile Include="StandardImage.cs" />
-    <Compile Include="ImageData\Channel.cs" />
-    <Compile Include="ImageData\FourierMatrix.cs" />
     <Compile Include="ImageData\PixelMatrix.cs" />
-    <Compile Include="ImageIO\Enum.cs" />
-    <Compile Include="ImageIO\Read.cs" />
-    <Compile Include="ImageIO\Write.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

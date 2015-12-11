@@ -9,7 +9,11 @@ namespace ImageCompression.Helpers
 {
     public static class BytePattern
     {
-
+        /// <summary>
+        /// Generate a bit array from an RGB colour depth
+        /// </summary>
+        /// <param name="depth">Depth of the RGB pixel</param>
+        /// <returns>Byte array containing length of the pixels</returns>
         public static byte[] GenerateArrayFromDepth(RGB.ColorDepth depth)
         {
             var pattern = new byte[3];
@@ -31,11 +35,6 @@ namespace ImageCompression.Helpers
             }
 
             return pattern;
-        }
-
-        public static List<byte> GenerateFromDepth(RGB.ColorDepth depth)
-        {
-            return GenerateArrayFromDepth(depth).ToList();
         }
     }
 }

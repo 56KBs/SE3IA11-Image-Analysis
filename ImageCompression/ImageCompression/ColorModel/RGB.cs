@@ -11,6 +11,9 @@ namespace ImageCompression.ColorModel
 {
     public class RGB : Interfaces.IEncodable
     {
+        /// <summary>
+        /// The colour depths allowed for RGB colour space
+        /// </summary>
         public enum ColorDepth : int
         {
             Eight = 8,
@@ -19,6 +22,9 @@ namespace ImageCompression.ColorModel
             TwentyFour = 24
         }
 
+        /// <summary>
+        /// Enum of the RGB colour channels
+        /// </summary>
         public enum Channels : int
         {
             R,
@@ -26,12 +32,24 @@ namespace ImageCompression.ColorModel
             B
         };
 
+        /// <summary>
+        /// Byte value of red
+        /// </summary>
         public byte R { get; set; }
 
+        /// <summary>
+        /// Byte value of green
+        /// </summary>
         public byte G { get; set; }
 
+        /// <summary>
+        /// Byte value of blue
+        /// </summary>
         public byte B { get; set; }
 
+        /// <summary>
+        /// Depth of the RGB pixel
+        /// </summary>
         public ColorDepth bits { get; private set; }
 
         public byte[] bytePattern { get; }

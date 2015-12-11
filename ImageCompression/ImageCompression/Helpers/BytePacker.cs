@@ -41,24 +41,36 @@ namespace ImageCompression.Helpers
             Eight = 0x00
         }
 
+        /// <summary>
+        /// Pack data into efficient manner
+        /// </summary>
+        /// <param name="encodableList"></param>
+        /// <returns></returns>
         public static byte[] Pack(List<Interfaces.IEncodable> encodableList)
         {
             var byteList = new List<byte>();
             byteList.Add(0); // Add empty value for doing operations on
 
+            // Set up references to the sizes we have
             var byteListIndex = 0;
             var byteBitsRemaining = 8;
             var byteLengthPatternIndex = 0;
 
+            // Loop over the encodable data
             foreach (Interfaces.IEncodable encodableData in encodableList)
             {
+                // Get the length of the byte pattern stored
                 var byteLengthPatternCount = encodableData.bytePattern.Length;
 
                 var byteData = encodableData.ToByteArray();
+
+                // For every byte in the byte array for the data item
                 foreach (byte byteValue in byteData)
                 {
+                    // Pack the byte, using the current byte size
                     PackVariableByte(ref byteList, ref byteListIndex, ref byteBitsRemaining, byteValue, encodableData.bytePattern[byteLengthPatternIndex]);
 
+                    // If the pattern index is at the end, loop back o the start (Unlikely to occur)
                     if (byteLengthPatternIndex == byteLengthPatternCount - 1)
                     {
                         byteLengthPatternIndex = 0;
@@ -87,6 +99,14 @@ namespace ImageCompression.Helpers
             return byteList.ToArray();
         }
 
+        /// <summary>
+        /// Pack the byte
+        /// </summary>
+        /// <param name="byteList">List of bytes</param>
+        /// <param name="byteListIndex">Index of the current byte</param>
+        /// <param name="byteBitsRemaining">Bits remaining that can be packed</param>
+        /// <param name="dataByte">Value of the data byte</param>
+        /// <param name="byteLength">Length of the byte</param>
         private static void PackVariableByte(ref List<byte> byteList, ref int byteListIndex, ref int byteBitsRemaining, byte dataByte, byte byteLength)
         {
             // Can merge in exactly, or with space to go

@@ -157,6 +157,7 @@
             // 
             // huffmanEncodingToolStripMenuItem
             // 
+            this.huffmanEncodingToolStripMenuItem.Enabled = false;
             this.huffmanEncodingToolStripMenuItem.Name = "huffmanEncodingToolStripMenuItem";
             this.huffmanEncodingToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
             this.huffmanEncodingToolStripMenuItem.Text = "Huffman Encoding";
