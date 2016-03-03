@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageCompression.ColorModel;
+using System.IO;
 
 namespace ImageCompression.Encoders
 {
@@ -83,6 +84,8 @@ namespace ImageCompression.Encoders
             // Return data in array form
             return RunLength.Encode(rawDataAs1DList).ToArray();
         }
+
+        
         
         /// <summary>
         /// Decode the runlength data
